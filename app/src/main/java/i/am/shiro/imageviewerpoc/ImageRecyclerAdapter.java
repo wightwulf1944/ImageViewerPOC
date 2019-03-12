@@ -23,7 +23,7 @@ public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder>
     @Override
     public int getItemCount() {
 //        return imageUris.size();
-        return 100; // todo: remove this
+        return 24; // todo: remove this
     }
 
     @NonNull

@@ -30,10 +30,10 @@ public class MainActivity extends AppCompatActivity {
         snapFab.setOnClickListener(v -> recyclerViewPager.togglePaging());
 
         View startZone = findViewById(R.id.view_zone_start);
-        startZone.setOnClickListener(v -> invokePlaceholder("previous page"));
+        startZone.setOnClickListener(v -> recyclerViewPager.previousPage());
 
         View endZone = findViewById(R.id.view_zone_end);
-        endZone.setOnClickListener(v -> invokePlaceholder("next page"));
+        endZone.setOnClickListener(v -> recyclerViewPager.nextPage());
     }
 
     private void invokePlaceholder(String name) {
