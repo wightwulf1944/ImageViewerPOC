@@ -28,7 +28,7 @@
 
     <View
         android:id="@+id/view_zone_start"
-        android:layout_width="48dp"
+        android:layout_width="40dp"
         android:layout_height="0dp"
         android:soundEffectsEnabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -37,7 +37,7 @@
 
     <View
         android:id="@+id/view_zone_end"
-        android:layout_width="48dp"
+        android:layout_width="40dp"
         android:layout_height="0dp"
         android:soundEffectsEnabled="false"
         app:layout_constraintBottom_toBottomOf="parent"
