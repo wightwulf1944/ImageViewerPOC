@@ -1,5 +1,6 @@
 package i.am.shiro.imageviewerpoc.fragments;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,18 +10,18 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.GestureDetector;
 
-import java.util.Arrays;
 import java.util.List;
 
-import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
 import i.am.shiro.imageviewerpoc.R;
+import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
 import i.am.shiro.imageviewerpoc.util.Debouncer;
+import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
 
 import static android.support.v4.view.ViewCompat.requireViewById;
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
@@ -28,15 +29,10 @@ import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
 /**
  * TODO
  * <p>
- * Even with smaller tap zones, they still accidentally consume swipe events. Consider manually
- * implementing gesture detection and have the whole screen be 1 big tap zone to fix this.
  */
 public class ImagePagerFragment extends Fragment {
 
     private final static double PAGER_ZONE_WIDTH = 0.1; // 10%
-
-
-    private final List<String> data = Arrays.asList("a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a");
 
     private final PagerSnapHelper pagerSnapHelper = new PagerSnapHelper();
 
@@ -53,6 +49,9 @@ public class ImagePagerFragment extends Fragment {
 
     private GestureDetectorCompat mDetector;
 
+    // ViewModel of the current activity
+    private ImageViewerViewModel viewModel;
+    private ImageRecyclerAdapter adapter;
 
 
     @Override
@@ -65,7 +64,9 @@ public class ImagePagerFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_image_viewer, container, false);
 
-        ImageRecyclerAdapter adapter = new ImageRecyclerAdapter(data);
+        viewModel = ViewModelProviders.of(requireActivity()).get(ImageViewerViewModel.class);
+        List<String> uris = viewModel.getImages().getValue(); // TODO observe instead
+        adapter = new ImageRecyclerAdapter(uris);
 
         View snapFab = requireViewById(view, R.id.fab_snap);
         snapFab.setOnClickListener(v -> togglePaging());
@@ -108,7 +109,7 @@ public class ImagePagerFragment extends Fragment {
 
     private void nextPage() {
         if (!pagingEnabled) return;
-        if (currentPosition == data.size() - 1) return;
+        if (currentPosition == adapter.getItemCount() - 1) return;
         recyclerView.smoothScrollToPosition(currentPosition + 1);
     }
 
@@ -139,7 +140,7 @@ public class ImagePagerFragment extends Fragment {
 
         @Override
         public boolean onDown(MotionEvent event) {
-            Log.i(DEBUG_TAG,"onDown: " + event.toString());
+            Log.i(DEBUG_TAG, "onDown: " + event.toString());
             downEventDebouncer.submit(event);
             return true;
         }
