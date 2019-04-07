@@ -1,10 +1,12 @@
 package i.am.shiro.imageviewerpoc;
 
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.util.Collections;
@@ -36,15 +38,18 @@ public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder>
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
         viewHolder.pageText.setText(String.valueOf(i));
+        viewHolder.imgView.setBackgroundColor((0 == i % 2) ? Color.RED : Color.BLUE);
     }
 
     final class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView pageText;
+        private ImageView imgView;
 
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
             pageText = itemView.findViewById(R.id.text_page);
+            imgView = itemView.findViewById(R.id.item_image);
         }
     }
 }
