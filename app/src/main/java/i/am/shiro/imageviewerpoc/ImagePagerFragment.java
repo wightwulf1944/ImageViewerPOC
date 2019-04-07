@@ -43,7 +43,7 @@ public class ImagePagerFragment extends Fragment {
 
     private RecyclerView recyclerView;
 
-    private View touchOverlay;
+//    private View touchOverlay;
 
     private boolean pagingEnabled;
 
@@ -72,9 +72,12 @@ public class ImagePagerFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(new CurrentPositionListener());
+        recyclerView.setOnTouchListener((v, event) -> mDetector.onTouchEvent(event));
 
+        /*
         touchOverlay = requireViewById(view, R.id.touch_overlay);
         touchOverlay.setOnTouchListener((v, event) -> mDetector.onTouchEvent(event));
+*/
 
         pagerSnapHelper.attachToRecyclerView(recyclerView);
 
@@ -124,9 +127,9 @@ public class ImagePagerFragment extends Fragment {
     }
 
     private void handleDownEvent(final MotionEvent event) {
-        double pagerZoneWidth = touchOverlay.getWidth() * PAGER_ZONE_WIDTH;
+        double pagerZoneWidth = recyclerView.getWidth() * PAGER_ZONE_WIDTH;
         if (event.getX() < pagerZoneWidth) previousPage();
-        else if (event.getX() > touchOverlay.getWidth() - pagerZoneWidth) nextPage();
+        else if (event.getX() > recyclerView.getWidth() - pagerZoneWidth) nextPage();
     }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
@@ -140,18 +143,18 @@ public class ImagePagerFragment extends Fragment {
         }
 
         @Override
-        public boolean onFling(MotionEvent event1, MotionEvent event2,
+        public boolean onFling(MotionEvent e1, MotionEvent e2,
                                float velocityX, float velocityY) {
-            Log.i(DEBUG_TAG, "onFling: " + event1.toString() + event2.toString());
+            Log.i(DEBUG_TAG, "onFling: " + e1.toString() + e2.toString());
             downEventDebouncer.clear();
-            return false;
+            return super.onFling(e1, e2, velocityX, velocityY);
         }
 
         public boolean onScroll(MotionEvent e1, MotionEvent e2,
                                 float distanceX, float distanceY) {
             Log.i(DEBUG_TAG, "onScroll: " + e1.toString() + e2.toString());
             downEventDebouncer.clear();
-            return false;
+            return super.onScroll(e1, e2, distanceX, distanceY);
         }
     }
 }
