@@ -13,9 +13,6 @@ import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
 
 public class ImageViewerActivity extends AppCompatActivity {
 
-    // ViewModel of this activity
-    private ImageViewerViewModel viewModel;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,8 +26,9 @@ public class ImageViewerActivity extends AppCompatActivity {
                 throw new RuntimeException("Initialization failed");
             }
 
-            viewModel = ViewModelProviders.of(this).get(ImageViewerViewModel.class);
-            viewModel.setImages(uris);
+            ViewModelProviders.of(this)
+                    .get(ImageViewerViewModel.class)
+                    .setImages(uris);
         }
 
         if (null == savedInstanceState) {

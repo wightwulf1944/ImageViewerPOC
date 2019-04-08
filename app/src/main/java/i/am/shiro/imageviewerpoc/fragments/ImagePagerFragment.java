@@ -39,8 +39,6 @@ public class ImagePagerFragment extends Fragment {
 
     private RecyclerView recyclerView;
 
-//    private View touchOverlay;
-
     private boolean pagingEnabled;
 
     private int currentPosition;
@@ -71,14 +69,7 @@ public class ImagePagerFragment extends Fragment {
         recyclerView.addOnScrollListener(new CurrentPositionListener());
         recyclerView.setOnTouchListener((v, event) -> mDetector.onTouchEvent(event));
 
-        /*
-        touchOverlay = requireViewById(view, R.id.touch_overlay);
-        touchOverlay.setOnTouchListener((v, event) -> mDetector.onTouchEvent(event));
-*/
-
-        pagerSnapHelper.attachToRecyclerView(recyclerView);
-
-        pagingEnabled = true;
+        enablePaging();
 
         ViewModelProviders.of(requireActivity())
                 .get(ImageViewerViewModel.class)
