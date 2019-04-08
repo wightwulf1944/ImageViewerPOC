@@ -17,15 +17,15 @@ import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter.ViewHolder;
 
 public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 
-    private final List<String> imageUris;
-
-    public ImageRecyclerAdapter(List<String> imageUris) {
-        this.imageUris = Collections.unmodifiableList(imageUris);
-    }
+    private List<String> imageUris;
 
     @Override
     public int getItemCount() {
         return imageUris.size();
+    }
+
+    public void setImageUris(List<String> imageUris) {
+        this.imageUris = Collections.unmodifiableList(imageUris);
     }
 
     @NonNull

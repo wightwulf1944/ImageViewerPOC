@@ -16,8 +16,6 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
-import java.util.List;
-
 import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
 import i.am.shiro.imageviewerpoc.util.Debouncer;
@@ -49,8 +47,6 @@ public class ImagePagerFragment extends Fragment {
 
     private GestureDetectorCompat mDetector;
 
-    // ViewModel of the current activity
-    private ImageViewerViewModel viewModel;
     private ImageRecyclerAdapter adapter;
 
 
@@ -64,12 +60,10 @@ public class ImagePagerFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_image_viewer, container, false);
 
-        viewModel = ViewModelProviders.of(requireActivity()).get(ImageViewerViewModel.class);
-        List<String> uris = viewModel.getImages().getValue(); // TODO observe instead
-        adapter = new ImageRecyclerAdapter(uris);
-
         View snapFab = requireViewById(view, R.id.fab_snap);
         snapFab.setOnClickListener(v -> togglePaging());
+
+        adapter = new ImageRecyclerAdapter();
 
         recyclerView = requireViewById(view, R.id.recycler_image);
         recyclerView.setHasFixedSize(true);
@@ -85,6 +79,11 @@ public class ImagePagerFragment extends Fragment {
         pagerSnapHelper.attachToRecyclerView(recyclerView);
 
         pagingEnabled = true;
+
+        ViewModelProviders.of(requireActivity())
+                .get(ImageViewerViewModel.class)
+                .getImages()
+                .observe(this, adapter::setImageUris);
 
         return view;
     }
