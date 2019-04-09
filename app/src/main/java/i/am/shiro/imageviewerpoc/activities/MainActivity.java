@@ -10,6 +10,7 @@ import java.util.List;
 
 import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.util.BundleManager;
+import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -18,6 +19,9 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        Timber.plant(new Timber.DebugTree());
+
         setContentView(R.layout.activity_main);
 
         View fab = findViewById(R.id.fab_launch);

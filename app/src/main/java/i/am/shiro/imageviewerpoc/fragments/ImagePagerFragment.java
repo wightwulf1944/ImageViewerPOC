@@ -9,7 +9,6 @@ import android.support.v4.view.GestureDetectorCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -20,6 +19,7 @@ import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
 import i.am.shiro.imageviewerpoc.util.Debouncer;
 import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
+import timber.log.Timber;
 
 import static android.support.v4.view.ViewCompat.requireViewById;
 import static android.support.v7.widget.RecyclerView.SCROLL_STATE_IDLE;
@@ -126,11 +126,10 @@ public class ImagePagerFragment extends Fragment {
     }
 
     class MyGestureListener extends GestureDetector.SimpleOnGestureListener {
-        private static final String DEBUG_TAG = "Gestures";
 
         @Override
         public boolean onDown(MotionEvent event) {
-            Log.i(DEBUG_TAG, "onDown: " + event.toString());
+            Timber.i("onDown: %s", event.toString());
             downEventDebouncer.submit(event);
             return true;
         }
@@ -138,14 +137,14 @@ public class ImagePagerFragment extends Fragment {
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2,
                                float velocityX, float velocityY) {
-            Log.i(DEBUG_TAG, "onFling: " + e1.toString() + e2.toString());
+            Timber.i("onFling: " + e1.toString() + e2.toString());
             downEventDebouncer.clear();
             return super.onFling(e1, e2, velocityX, velocityY);
         }
 
         public boolean onScroll(MotionEvent e1, MotionEvent e2,
                                 float distanceX, float distanceY) {
-            Log.i(DEBUG_TAG, "onScroll: " + e1.toString() + e2.toString());
+            Timber.i("onScroll: " + e1.toString() + e2.toString());
             downEventDebouncer.clear();
             return super.onScroll(e1, e2, distanceX, distanceY);
         }
