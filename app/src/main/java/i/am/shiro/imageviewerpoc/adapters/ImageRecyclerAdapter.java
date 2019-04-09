@@ -44,8 +44,8 @@ public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder>
 
     final class ViewHolder extends RecyclerView.ViewHolder {
 
-        private TextView pageText;
-        private ImageView imgView;
+        private final TextView pageText;
+        private final ImageView imgView;
 
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
