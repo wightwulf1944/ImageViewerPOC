@@ -11,6 +11,7 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import i.am.shiro.imageviewerpoc.fragments.ImagePagerFragment;
+import i.am.shiro.imageviewerpoc.util.Helper;
 
 import static java.lang.Math.abs;
 
@@ -20,11 +21,16 @@ import static java.lang.Math.abs;
  */
 public final class PagerController extends PagerSnapHelper {
 
+    private final static int PAGER_ZONE_WIDTH_DP = 32;
+
     private final RecyclerView recyclerView;
 
     private final int scrollingThresholdVelocity;
 
     private int currentPosition;
+
+    private double pagerZoneWidthPx;
+
 
     public PagerController(@NonNull RecyclerView recyclerView) {
         this.recyclerView = recyclerView;
@@ -34,17 +40,18 @@ public final class PagerController extends PagerSnapHelper {
         recyclerView.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
         scrollingThresholdVelocity = recyclerView.getMinFlingVelocity() * 50;
+        pagerZoneWidthPx = Helper.dpToPixel(context, PAGER_ZONE_WIDTH_DP);
 
         attachToRecyclerView(recyclerView);
     }
 
-    public void nextPage() {
+    private void nextPage() {
         int itemCount = recyclerView.getAdapter().getItemCount();
         if (currentPosition == itemCount - 1) return;
         recyclerView.smoothScrollToPosition(++currentPosition);
     }
 
-    public void previousPage() {
+    private void previousPage() {
         if (currentPosition == 0) return;
         recyclerView.smoothScrollToPosition(--currentPosition);
     }
@@ -69,15 +76,12 @@ public final class PagerController extends PagerSnapHelper {
 
     private final class OnGestureListener extends GestureDetector.SimpleOnGestureListener {
 
-        private final static double PAGER_ZONE_WIDTH = 0.1; // 10%
-
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            double pagerZoneWidth = recyclerView.getWidth() * PAGER_ZONE_WIDTH;
-            if (e.getX() < pagerZoneWidth) {
+            if (e.getX() < pagerZoneWidthPx) {
                 previousPage();
                 return true;
-            } else if (e.getX() > recyclerView.getWidth() - pagerZoneWidth) {
+            } else if (e.getX() > recyclerView.getWidth() - pagerZoneWidthPx) {
                 nextPage();
                 return true;
             }
