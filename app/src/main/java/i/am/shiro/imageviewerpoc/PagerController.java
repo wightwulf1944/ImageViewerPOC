@@ -33,9 +33,7 @@ public final class PagerController extends PagerSnapHelper {
         GestureDetectorCompat gestureDetector = new GestureDetectorCompat(context, new OnGestureListener());
         recyclerView.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
-        int minFlingVelocity = recyclerView.getMinFlingVelocity();
-        int maxFlingVelocity = recyclerView.getMaxFlingVelocity();
-        scrollingThresholdVelocity = (minFlingVelocity + maxFlingVelocity) / 2;
+        scrollingThresholdVelocity = recyclerView.getMinFlingVelocity() * 50;
 
         attachToRecyclerView(recyclerView);
     }
