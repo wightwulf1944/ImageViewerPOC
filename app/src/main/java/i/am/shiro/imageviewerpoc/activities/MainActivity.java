@@ -1,10 +1,13 @@
 package i.am.shiro.imageviewerpoc.activities;
 
+import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
@@ -14,7 +17,9 @@ import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity {
 
-    private final List<String> images = Arrays.asList("a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a", "a");
+    // ASSETS ARE TO BE PUT INTO THE DOWNLOADS FOLDER
+    // SubsamplingScaleImageView does _not_ support animated GIFs
+    private final List<String> images = Arrays.asList("01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg" );
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -26,6 +31,11 @@ public class MainActivity extends AppCompatActivity {
 
         View fab = findViewById(R.id.fab_launch);
         fab.setOnClickListener(v -> launchViewer());
+
+        File downloadsFolder = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+        for (int i = 0; i < images.size(); i++) {
+            images.set(i, downloadsFolder.getAbsolutePath() + "/" + images.get(i));
+        }
     }
 
     private void launchViewer() {

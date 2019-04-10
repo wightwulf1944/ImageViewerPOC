@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.davemorrissey.labs.subscaleview.ImageSource;
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+
 import java.util.Collections;
 import java.util.List;
 
@@ -16,6 +19,8 @@ import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter.ViewHolder;
 
 public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
+
+    // TODO : SubsamplingScaleImageView does _not_ support animated GIFs -> use pl.droidsonroids.gif:android-gif-drawable when serving a GIF ?
 
     private List<String> imageUris;
 
@@ -37,19 +42,16 @@ public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder>
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int i) {
-        viewHolder.pageText.setText(String.valueOf(i));
-        viewHolder.imgView.setBackgroundColor((0 == i % 2) ? Color.RED : Color.BLUE);
+    public void onBindViewHolder(@NonNull ViewHolder viewHolder, int pos) {
+        viewHolder.imgView.setImage(ImageSource.uri(imageUris.get(pos)));
     }
 
     final class ViewHolder extends RecyclerView.ViewHolder {
 
-        private final TextView pageText;
-        private final ImageView imgView;
+        private final SubsamplingScaleImageView imgView;
 
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
-            pageText = itemView.findViewById(R.id.text_page);
             imgView = itemView.findViewById(R.id.item_image);
         }
     }
