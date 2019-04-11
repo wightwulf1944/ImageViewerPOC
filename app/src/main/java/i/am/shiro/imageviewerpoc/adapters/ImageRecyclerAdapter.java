@@ -15,6 +15,7 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import java.util.Collections;
 import java.util.List;
 
+import i.am.shiro.imageviewerpoc.Prefs;
 import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter.ViewHolder;
 
@@ -43,6 +44,9 @@ public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int pos) {
+        int resizeMode = SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE;
+        if (Prefs.resizeMode == Prefs.RESIZE_MODE_FILL) resizeMode = SubsamplingScaleImageView.SCALE_TYPE_START;
+        viewHolder.imgView.setMinimumScaleType(resizeMode);
         viewHolder.imgView.setImage(ImageSource.uri(imageUris.get(pos)));
     }
 
