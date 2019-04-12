@@ -11,7 +11,6 @@ import android.view.MotionEvent;
 import android.view.View;
 
 import i.am.shiro.imageviewerpoc.fragments.ImagePagerFragment;
-import i.am.shiro.imageviewerpoc.util.Helper;
 
 import static java.lang.Math.abs;
 
@@ -21,15 +20,13 @@ import static java.lang.Math.abs;
  */
 public final class PagerController extends PagerSnapHelper {
 
-    private final static int PAGER_ZONE_WIDTH_DP = 32;
-
     private final RecyclerView recyclerView;
 
     private final int scrollingThresholdVelocity;
 
     private int currentPosition;
 
-    private double pagerZoneWidthPx;
+    private double pagerTapZoneWidth;
 
 
     public PagerController(@NonNull RecyclerView recyclerView) {
@@ -40,7 +37,8 @@ public final class PagerController extends PagerSnapHelper {
         recyclerView.setOnTouchListener((v, event) -> gestureDetector.onTouchEvent(event));
 
         scrollingThresholdVelocity = recyclerView.getMinFlingVelocity() * 50;
-        pagerZoneWidthPx = Helper.dpToPixel(context, PAGER_ZONE_WIDTH_DP);
+        pagerTapZoneWidth = context.getResources().getDimensionPixelSize(R.dimen.tap_zone_width);
+
 
         attachToRecyclerView(recyclerView);
     }
@@ -78,10 +76,10 @@ public final class PagerController extends PagerSnapHelper {
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            if (e.getX() < pagerZoneWidthPx) {
+            if (e.getX() < pagerTapZoneWidth) {
                 previousPage();
                 return true;
-            } else if (e.getX() > recyclerView.getWidth() - pagerZoneWidthPx) {
+            } else if (e.getX() > recyclerView.getWidth() - pagerTapZoneWidth) {
                 nextPage();
                 return true;
             }
