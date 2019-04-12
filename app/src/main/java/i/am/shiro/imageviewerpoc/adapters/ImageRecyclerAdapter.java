@@ -1,13 +1,10 @@
 package i.am.shiro.imageviewerpoc.adapters;
 
-import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.davemorrissey.labs.subscaleview.ImageSource;
 import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
@@ -44,9 +41,6 @@ public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int pos) {
-        int resizeMode = SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE;
-        if (Prefs.resizeMode == Prefs.RESIZE_MODE_FILL) resizeMode = SubsamplingScaleImageView.SCALE_TYPE_START;
-        viewHolder.imgView.setMinimumScaleType(resizeMode);
         viewHolder.imgView.setImage(ImageSource.uri(imageUris.get(pos)));
     }
 
@@ -57,6 +51,15 @@ public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder>
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
             imgView = itemView.findViewById(R.id.item_image);
+            imgView.setMinimumScaleType(getScaleType());
+        }
+
+        private int getScaleType() {
+            if (Prefs.resizeMode == Prefs.RESIZE_MODE_FILL) {
+                return SubsamplingScaleImageView.SCALE_TYPE_START;
+            } else {
+                return SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE;
+            }
         }
     }
 }
