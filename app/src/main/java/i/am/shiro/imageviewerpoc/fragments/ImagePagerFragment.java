@@ -14,6 +14,8 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import i.am.shiro.imageviewerpoc.PrefsMockup;
@@ -32,6 +34,9 @@ public class ImagePagerFragment extends Fragment {
     private View directionChooserOverlay;
     private LinearLayoutManager llm;
     private PagerController pagerController;
+    private ImageRecyclerAdapter adapter;
+    private SeekBar seekBar;
+    private TextView pageNumber;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -45,9 +50,8 @@ public class ImagePagerFragment extends Fragment {
         return view;
     }
 
-    private void initPager(View rootView)
-    {
-        ImageRecyclerAdapter adapter = new ImageRecyclerAdapter();
+    private void initPager(View rootView) {
+        adapter = new ImageRecyclerAdapter();
 
         RecyclerView recyclerView = requireViewById(rootView, R.id.image_viewer_recycler);
         recyclerView.setHasFixedSize(true);
@@ -67,8 +71,7 @@ public class ImagePagerFragment extends Fragment {
         adapter.setGestureListener(touchGestureListener);
     }
 
-    private void initDirectionChooser(View rootView)
-    {
+    private void initDirectionChooser(View rootView) {
         directionChooserOverlay = requireViewById(rootView, R.id.image_viewer_direction_chooser_overlay);
         directionChooserOverlay.setVisibility(View.VISIBLE);
 
@@ -81,21 +84,46 @@ public class ImagePagerFragment extends Fragment {
 
     private void chooseReadingDirection(int readingDirection) {
         PrefsMockup.readingDirection = readingDirection;
-        directionChooserOverlay.setVisibility(View.GONE);
+        directionChooserOverlay.setVisibility(View.INVISIBLE);
         llm.setReverseLayout(PrefsMockup.DIRECTION_RTL == readingDirection);
     }
 
-    private void initControlsOverlay(View rootView)
-    {
+    private void initControlsOverlay(View rootView) {
         controlsOverlay = requireViewById(rootView, R.id.image_viewer_controls_overlay);
         // Tap center of screen
-        controlsOverlay.setOnClickListener(v -> controlsOverlay.setVisibility(View.GONE));
+        controlsOverlay.setOnClickListener(v -> controlsOverlay.setVisibility(View.INVISIBLE));
         // Tap back button
         View backButton = requireViewById(rootView, R.id.viewer_back_btn);
         backButton.setOnClickListener(v -> quitActivity());
         // Tap settings button
         View settingsButton = requireViewById(rootView, R.id.viewer_settings_btn);
         settingsButton.setOnClickListener(v -> launchSettings());
+        // Page number button
+        pageNumber = requireViewById(rootView, R.id.viewer_pagenumber_text);
+        // Slider
+        seekBar = requireViewById(rootView, R.id.viewer_seekbar);
+        seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                pageNumber.setText(progress + " / " + seekBar.getMax());
+                if (fromUser) pagerController.toPage(progress);
+            }
+        });
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Has to be called there because the adapter hasn't observed the image list yet when called from onCreateView
+        seekBar.setMax(adapter.getItemCount());
     }
 
     public boolean onKeyDown(int keyCode) {
@@ -111,14 +139,12 @@ public class ImagePagerFragment extends Fragment {
         return false;
     }
 
-    private void quitActivity()
-    {
+    private void quitActivity() {
         Activity a = getActivity();
         if (a != null) a.onBackPressed();
     }
 
-    private void launchSettings()
-    {
+    private void launchSettings() {
         Toast.makeText(getContext(), "Settings not implemented yet", Toast.LENGTH_SHORT).show();
     }
 
@@ -140,11 +166,20 @@ public class ImagePagerFragment extends Fragment {
             int itemCount = recyclerView.getAdapter().getItemCount();
             if (currentPosition == itemCount - 1) return;
             recyclerView.smoothScrollToPosition(++currentPosition);
+            seekBar.setProgress(currentPosition);
         }
 
         void previousPage() {
             if (currentPosition == 0) return;
             recyclerView.smoothScrollToPosition(--currentPosition);
+            seekBar.setProgress(currentPosition);
+        }
+
+        void toPage(int pageNum) {
+            int itemCount = recyclerView.getAdapter().getItemCount();
+            if ((currentPosition == pageNum) || (pageNum >= itemCount)) return;
+            currentPosition = pageNum;
+            recyclerView.smoothScrollToPosition(currentPosition);
         }
 
         @Override
@@ -178,7 +213,7 @@ public class ImagePagerFragment extends Fragment {
                 else
                     previousPage();
             } else { // Center zone
-                controlsOverlay.setVisibility(View.VISIBLE);
+                controlsOverlay.setVisibility(View.VISIBLE); // TODO AlphaAnimation to make it appear progressively
             }
             return false;
         }
