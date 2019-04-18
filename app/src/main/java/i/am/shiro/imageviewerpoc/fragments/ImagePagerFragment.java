@@ -92,13 +92,19 @@ public class ImagePagerFragment extends Fragment {
         browseModeChooserOverlay.setVisibility(View.VISIBLE);
 
         View ltrButton = requireViewById(rootView, R.id.chooseHorizontalLtr);
+        View ltrText = requireViewById(rootView, R.id.chooseDirectionLtrText);
         ltrButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_HORIZONTAL));
+        ltrText.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_HORIZONTAL));
 
         View rtlButton = requireViewById(rootView, R.id.chooseHorizontalRtl);
+        View rtlText = requireViewById(rootView, R.id.chooseDirectionRtlText);
         rtlButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_RTL, PrefsMockup.ORIENTATION_HORIZONTAL));
+        rtlText.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_RTL, PrefsMockup.ORIENTATION_HORIZONTAL));
 
         View verticalButton = requireViewById(rootView, R.id.chooseVertical);
+        View verticalText = requireViewById(rootView, R.id.chooseVerticalText);
         verticalButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_VERTICAL));
+        verticalText.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_VERTICAL));
     }
 
     private void chooseBrowseMode(int readingDirection, int orientation) {
