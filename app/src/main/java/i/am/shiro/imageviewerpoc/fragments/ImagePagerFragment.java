@@ -1,5 +1,6 @@
 package i.am.shiro.imageviewerpoc.fragments;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
@@ -36,9 +38,18 @@ public class ImagePagerFragment extends Fragment {
         View view = inflater.inflate(R.layout.activity_image_viewer, container, false);
         pagerTapZoneWidth = getResources().getDimensionPixelSize(R.dimen.tap_zone_width);
 
+        initPager(view);
+        initControlsOverlay(view);
+        if (PrefsMockup.DIRECTION_NONE == PrefsMockup.readingDirection) initDirectionChooser(view);
+
+        return view;
+    }
+
+    private void initPager(View rootView)
+    {
         ImageRecyclerAdapter adapter = new ImageRecyclerAdapter();
 
-        RecyclerView recyclerView = requireViewById(view, R.id.image_viewer_recycler);
+        RecyclerView recyclerView = requireViewById(rootView, R.id.image_viewer_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
@@ -54,28 +65,37 @@ public class ImagePagerFragment extends Fragment {
         pagerController = new PagerController(recyclerView);
         OnTouchGestureListener touchGestureListener = new OnTouchGestureListener(getContext(), pagerController);
         adapter.setGestureListener(touchGestureListener);
+    }
 
-        controlsOverlay = requireViewById(view, R.id.image_viewer_controls_overlay);
-        controlsOverlay.setOnClickListener(v -> controlsOverlay.setVisibility(View.GONE));
+    private void initDirectionChooser(View rootView)
+    {
+        directionChooserOverlay = requireViewById(rootView, R.id.image_viewer_direction_chooser_overlay);
+        directionChooserOverlay.setVisibility(View.VISIBLE);
 
-        if (PrefsMockup.DIRECTION_NONE == PrefsMockup.readingDirection) {
-            directionChooserOverlay = requireViewById(view, R.id.image_viewer_direction_chooser_overlay);
-            directionChooserOverlay.setVisibility(View.VISIBLE);
+        View ltrButton = requireViewById(rootView, R.id.chooseDirectionLtr);
+        ltrButton.setOnClickListener(v -> chooseReadingDirection(PrefsMockup.DIRECTION_LTR));
 
-            View ltrButton = requireViewById(view, R.id.chooseDirectionLtr);
-            ltrButton.setOnClickListener(v -> chooseReadingDirection(PrefsMockup.DIRECTION_LTR));
-
-            View rtlButton = requireViewById(view, R.id.chooseDirectionRtl);
-            rtlButton.setOnClickListener(v -> chooseReadingDirection(PrefsMockup.DIRECTION_RTL));
-        }
-
-        return view;
+        View rtlButton = requireViewById(rootView, R.id.chooseDirectionRtl);
+        rtlButton.setOnClickListener(v -> chooseReadingDirection(PrefsMockup.DIRECTION_RTL));
     }
 
     private void chooseReadingDirection(int readingDirection) {
         PrefsMockup.readingDirection = readingDirection;
         directionChooserOverlay.setVisibility(View.GONE);
         llm.setReverseLayout(PrefsMockup.DIRECTION_RTL == readingDirection);
+    }
+
+    private void initControlsOverlay(View rootView)
+    {
+        controlsOverlay = requireViewById(rootView, R.id.image_viewer_controls_overlay);
+        // Tap center of screen
+        controlsOverlay.setOnClickListener(v -> controlsOverlay.setVisibility(View.GONE));
+        // Tap back button
+        View backButton = requireViewById(rootView, R.id.viewer_back_btn);
+        backButton.setOnClickListener(v -> quitActivity());
+        // Tap settings button
+        View settingsButton = requireViewById(rootView, R.id.viewer_settings_btn);
+        settingsButton.setOnClickListener(v -> launchSettings());
     }
 
     public boolean onKeyDown(int keyCode) {
@@ -85,8 +105,21 @@ public class ImagePagerFragment extends Fragment {
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
             pagerController.nextPage();
             return true;
+        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
+            quitActivity();
         }
         return false;
+    }
+
+    private void quitActivity()
+    {
+        Activity a = getActivity();
+        if (a != null) a.onBackPressed();
+    }
+
+    private void launchSettings()
+    {
+        Toast.makeText(getContext(), "Settings not implemented yet", Toast.LENGTH_SHORT).show();
     }
 
     public final class PagerController extends PagerSnapHelper implements OnTouchGestureListener.OnTapListener {
