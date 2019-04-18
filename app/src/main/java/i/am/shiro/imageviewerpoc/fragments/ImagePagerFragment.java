@@ -37,7 +37,7 @@ public class ImagePagerFragment extends Fragment {
 
     private int pagerTapZoneWidth;
     private View controlsOverlay;
-    private View directionChooserOverlay;
+    private View browseModeChooserOverlay;
     private LinearLayoutManager llm;
     private PagerController pagerController;
     private ImageRecyclerAdapter adapter;
@@ -46,12 +46,12 @@ public class ImagePagerFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.activity_image_viewer, container, false);
+        View view = inflater.inflate(R.layout.activity_viewer, container, false);
         pagerTapZoneWidth = getResources().getDimensionPixelSize(R.dimen.tap_zone_width);
 
         initPager(view);
         initControlsOverlay(view);
-        if (PrefsMockup.DIRECTION_NONE == PrefsMockup.readingDirection) initDirectionChooser(view);
+        if (PrefsMockup.DIRECTION_NONE == PrefsMockup.readingDirection) initBrowseModeChooser(view);
 
         return view;
     }
@@ -77,9 +77,9 @@ public class ImagePagerFragment extends Fragment {
         adapter.setGestureListener(touchGestureListener);
     }
 
-    private void initDirectionChooser(View rootView) {
-        directionChooserOverlay = requireViewById(rootView, R.id.image_viewer_direction_chooser_overlay);
-        directionChooserOverlay.setVisibility(View.VISIBLE);
+    private void initBrowseModeChooser(View rootView) {
+        browseModeChooserOverlay = requireViewById(rootView, R.id.image_viewer_browse_mode_chooser_overlay);
+        browseModeChooserOverlay.setVisibility(View.VISIBLE);
 
         View ltrButton = requireViewById(rootView, R.id.chooseDirectionLtr);
         ltrButton.setOnClickListener(v -> chooseReadingDirection(PrefsMockup.DIRECTION_LTR));
@@ -90,7 +90,7 @@ public class ImagePagerFragment extends Fragment {
 
     private void chooseReadingDirection(int readingDirection) {
         PrefsMockup.readingDirection = readingDirection;
-        directionChooserOverlay.setVisibility(View.INVISIBLE);
+        browseModeChooserOverlay.setVisibility(View.INVISIBLE);
         llm.setReverseLayout(PrefsMockup.DIRECTION_RTL == readingDirection);
     }
 

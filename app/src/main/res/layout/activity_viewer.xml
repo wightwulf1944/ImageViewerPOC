@@ -16,18 +16,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:listitem="@layout/item_image_view" />
+        tools:listitem="@layout/item_viewer_image" />
 
     <include
         android:id="@+id/image_viewer_controls_overlay"
         android:clickable="true"
         android:focusable="true"
-        layout="@layout/include_controls_overlay"
+        layout="@layout/include_viewer_controls"
         android:visibility="invisible" />
 
     <include
-        android:id="@+id/image_viewer_direction_chooser_overlay"
-        layout="@layout/include_image_viewer_direction"
+        android:id="@+id/image_viewer_browse_mode_chooser_overlay"
+        layout="@layout/include_viewer_browse_mode_chooser"
         android:visibility="invisible" />
 
 </android.support.constraint.ConstraintLayout>
