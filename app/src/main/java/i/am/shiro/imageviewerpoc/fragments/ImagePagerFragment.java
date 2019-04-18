@@ -90,7 +90,7 @@ public class ImagePagerFragment extends Fragment {
         rtlButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_RTL, PrefsMockup.ORIENTATION_HORIZONTAL));
 
         View verticalButton = requireViewById(rootView, R.id.chooseVertical);
-        rtlButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_VERTICAL));
+        verticalButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_VERTICAL));
     }
 
     private void chooseBrowseMode(int readingDirection, int orientation) {
