@@ -6,8 +6,6 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-
 public class OnTouchGestureListener extends GestureDetector.SimpleOnGestureListener implements View.OnTouchListener {
     private final GestureDetectorCompat gestureDetector;
 //    private final SubsamplingScaleImageView imageView;
@@ -18,7 +16,7 @@ public class OnTouchGestureListener extends GestureDetector.SimpleOnGestureListe
             @Override
             public boolean onSingleTapUp(MotionEvent e) {
 //                if (imageView.isReady())
-                    return tapListener.onTap(e);
+                return tapListener.onTap(e);
 //                else return false;
             }
         });
