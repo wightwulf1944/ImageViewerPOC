@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +32,7 @@ public class ImagePagerFragment extends Fragment {
     private int pagerTapZoneWidth;
     private View directionChooserOverlay;
     private LinearLayoutManager llm;
+    private PagerController pagerController;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -52,12 +54,11 @@ public class ImagePagerFragment extends Fragment {
                 .getImages()
                 .observe(this, adapter::setImageUris);
 
-        PagerController pagerController = new PagerController(recyclerView);
+        pagerController = new PagerController(recyclerView);
         OnTouchGestureListener touchGestureListener = new OnTouchGestureListener(getContext(), pagerController);
         adapter.setGestureListener(touchGestureListener);
 
-        if (PrefsMockup.DIRECTION_NONE == PrefsMockup.readingDirection)
-        {
+        if (PrefsMockup.DIRECTION_NONE == PrefsMockup.readingDirection) {
             directionChooserOverlay = requireViewById(view, R.id.direction_chooser_overlay);
             directionChooserOverlay.setVisibility(View.VISIBLE);
 
@@ -71,11 +72,21 @@ public class ImagePagerFragment extends Fragment {
         return view;
     }
 
-    private void chooseReadingDirection(int readingDirection)
-    {
+    private void chooseReadingDirection(int readingDirection) {
         PrefsMockup.readingDirection = readingDirection;
         directionChooserOverlay.setVisibility(View.GONE);
         llm.setReverseLayout(PrefsMockup.DIRECTION_RTL == readingDirection);
+    }
+
+    public boolean onKeyDown(int keyCode) {
+        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+            pagerController.previousPage();
+            return true;
+        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+            pagerController.nextPage();
+            return true;
+        }
+        return false;
     }
 
     public final class PagerController extends PagerSnapHelper implements OnTouchGestureListener.OnTapListener {

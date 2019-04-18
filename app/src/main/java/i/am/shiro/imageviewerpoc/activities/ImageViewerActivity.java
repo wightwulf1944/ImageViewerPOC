@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.KeyEvent;
 
 import java.util.List;
 
@@ -14,6 +15,8 @@ import i.am.shiro.imageviewerpoc.util.BundleManager;
 import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
 
 public class ImageViewerActivity extends AppCompatActivity {
+
+    ImagePagerFragment fragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,10 +42,17 @@ public class ImageViewerActivity extends AppCompatActivity {
         }
 
         if (null == savedInstanceState) {
+            fragment = new ImagePagerFragment();
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(android.R.id.content, new ImagePagerFragment())
+                    .add(android.R.id.content, fragment)
                     .commit();
         }
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (fragment != null) return fragment.onKeyDown(keyCode);
+        else return super.onKeyDown(keyCode, event);
     }
 }
