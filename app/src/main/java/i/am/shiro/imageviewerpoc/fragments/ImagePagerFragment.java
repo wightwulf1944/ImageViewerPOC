@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -12,6 +13,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
 import i.am.shiro.imageviewerpoc.listener.OnTouchGestureListener;
@@ -27,6 +29,8 @@ import static java.lang.Math.abs;
 public class ImagePagerFragment extends Fragment {
 
     private int pagerTapZoneWidth;
+    private View directionChooserOverlay;
+    private LinearLayoutManager llm;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -39,6 +43,10 @@ public class ImagePagerFragment extends Fragment {
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
+        llm = new LinearLayoutManager(getContext());
+        llm.setOrientation(LinearLayoutManager.HORIZONTAL);
+        recyclerView.setLayoutManager(llm);
+
         ViewModelProviders.of(requireActivity())
                 .get(ImageViewerViewModel.class)
                 .getImages()
@@ -48,7 +56,26 @@ public class ImagePagerFragment extends Fragment {
         OnTouchGestureListener touchGestureListener = new OnTouchGestureListener(getContext(), pagerController);
         adapter.setGestureListener(touchGestureListener);
 
+        if (PrefsMockup.DIRECTION_NONE == PrefsMockup.readingDirection)
+        {
+            directionChooserOverlay = requireViewById(view, R.id.direction_chooser_overlay);
+            directionChooserOverlay.setVisibility(View.VISIBLE);
+
+            View ltrButton = requireViewById(view, R.id.chooseDirectionLtr);
+            ltrButton.setOnClickListener(v -> chooseReadingDirection(PrefsMockup.DIRECTION_LTR));
+
+            View rtlButton = requireViewById(view, R.id.chooseDirectionRtl);
+            rtlButton.setOnClickListener(v -> chooseReadingDirection(PrefsMockup.DIRECTION_RTL));
+        }
+
         return view;
+    }
+
+    private void chooseReadingDirection(int readingDirection)
+    {
+        PrefsMockup.readingDirection = readingDirection;
+        directionChooserOverlay.setVisibility(View.GONE);
+        llm.setReverseLayout(PrefsMockup.DIRECTION_RTL == readingDirection);
     }
 
     public final class PagerController extends PagerSnapHelper implements OnTouchGestureListener.OnTapListener {
@@ -97,9 +124,15 @@ public class ImagePagerFragment extends Fragment {
         @Override
         public boolean onTap(MotionEvent e) {
             if (e.getX() < pagerTapZoneWidth) {
-                previousPage();
+                if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
+                    previousPage();
+                else
+                    nextPage();
             } else if (e.getX() > recyclerView.getWidth() - pagerTapZoneWidth) {
-                nextPage();
+                if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
+                    nextPage();
+                else
+                    previousPage();
             }
             return false;
         }

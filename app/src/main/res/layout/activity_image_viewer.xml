@@ -18,4 +18,9 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:listitem="@layout/item_image_view" />
 
+    <include
+        android:id="@+id/direction_chooser_overlay"
+        layout="@layout/include_image_viewer_direction"
+        android:visibility="gone" />
+
 </android.support.constraint.ConstraintLayout>
