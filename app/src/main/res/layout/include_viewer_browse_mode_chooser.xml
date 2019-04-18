@@ -1,15 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="#AAFFFFFF"
-    android:layout_width="match_parent"
+    app:layout_constraintLeft_toLeftOf="parent"
+    app:layout_constraintRight_toRightOf="parent"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    android:padding="16dp"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent">
 
     <TextView
         android:id="@+id/chooseDirectionTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"
         android:text="@string/choose_direction"
         android:textSize="24sp"
         android:textAlignment="center"
@@ -18,9 +23,9 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/chooseDirectionLtr"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+        android:id="@+id/chooseHorizontalLtr"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:scaleType="fitCenter"
         android:clickable="true"
         android:focusable="true"
@@ -28,7 +33,9 @@
         android:src="@drawable/ic_direction_ltr"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/chooseDirectionTitle" />
+        app:layout_constraintTop_toBottomOf="@id/chooseDirectionTitle"
+        app:layout_constraintBottom_toTopOf="@id/chooseDirectionLtrText"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/chooseDirectionLtrText"
@@ -38,31 +45,65 @@
         android:textSize="20sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/chooseDirectionLtr" />
+        app:layout_constraintTop_toBottomOf="@id/chooseHorizontalLtr"
+        app:layout_constraintBottom_toTopOf="@id/chooseHorizontalRtl"
+        />
 
     <ImageButton
-        android:id="@+id/chooseDirectionRtl"
-        android:layout_width="160dp"
-        android:layout_height="160dp"
+        android:id="@+id/chooseHorizontalRtl"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:scaleType="fitCenter"
-        android:adjustViewBounds="true"
         android:clickable="true"
         android:focusable="true"
         android:background="#00000000"
         android:src="@drawable/ic_direction_rtl"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/chooseDirectionLtrText" />
+        app:layout_constraintTop_toBottomOf="@id/chooseDirectionLtrText"
+        app:layout_constraintBottom_toTopOf="@id/chooseDirectionRtlText"
+        tools:ignore="ContentDescription" />
 
     <TextView
         android:id="@+id/chooseDirectionRtlText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/direction_rtl"
+        android:text="@string/direction_ltr"
         android:textSize="20sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/chooseDirectionRtl"
+        app:layout_constraintTop_toBottomOf="@id/chooseHorizontalRtl"
+        app:layout_constraintBottom_toTopOf="@id/chooseVertical"
+        />
+
+    <ImageButton
+        android:id="@+id/chooseVertical"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="fitCenter"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:focusable="true"
+        android:background="#00000000"
+        android:src="@drawable/ic_direction_vertical"
+        android:layout_marginTop="16dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chooseDirectionRtlText"
+        app:layout_constraintBottom_toTopOf="@id/chooseVerticalText"
+        tools:ignore="ContentDescription" />
+
+    <TextView
+        android:id="@+id/chooseVerticalText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/direction_vertical"
+        android:textSize="20sp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/chooseVertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         />
 
 </android.support.constraint.ConstraintLayout>

@@ -3,4 +3,5 @@
     <string name="choose_direction">Choose your reading direction</string>
     <string name="direction_ltr">Left to right</string>
     <string name="direction_rtl">Right to left</string>
+    <string name="direction_vertical">Top to bottom</string>
 </resources>

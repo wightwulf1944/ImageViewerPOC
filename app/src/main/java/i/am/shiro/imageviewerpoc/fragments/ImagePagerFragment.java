@@ -24,6 +24,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
+
 import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
@@ -81,17 +83,24 @@ public class ImagePagerFragment extends Fragment {
         browseModeChooserOverlay = requireViewById(rootView, R.id.image_viewer_browse_mode_chooser_overlay);
         browseModeChooserOverlay.setVisibility(View.VISIBLE);
 
-        View ltrButton = requireViewById(rootView, R.id.chooseDirectionLtr);
-        ltrButton.setOnClickListener(v -> chooseReadingDirection(PrefsMockup.DIRECTION_LTR));
+        View ltrButton = requireViewById(rootView, R.id.chooseHorizontalLtr);
+        ltrButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_HORIZONTAL));
 
-        View rtlButton = requireViewById(rootView, R.id.chooseDirectionRtl);
-        rtlButton.setOnClickListener(v -> chooseReadingDirection(PrefsMockup.DIRECTION_RTL));
+        View rtlButton = requireViewById(rootView, R.id.chooseHorizontalRtl);
+        rtlButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_RTL, PrefsMockup.ORIENTATION_HORIZONTAL));
+
+        View verticalButton = requireViewById(rootView, R.id.chooseVertical);
+        rtlButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_VERTICAL));
     }
 
-    private void chooseReadingDirection(int readingDirection) {
+    private void chooseBrowseMode(int readingDirection, int orientation) {
         PrefsMockup.readingDirection = readingDirection;
-        browseModeChooserOverlay.setVisibility(View.INVISIBLE);
+        PrefsMockup.orientation = orientation;
+
         llm.setReverseLayout(PrefsMockup.DIRECTION_RTL == readingDirection);
+        llm.setOrientation(getOrientation());
+
+        browseModeChooserOverlay.setVisibility(View.INVISIBLE);
     }
 
     private void initControlsOverlay(View rootView) {
@@ -175,6 +184,14 @@ public class ImagePagerFragment extends Fragment {
                 if (imm != null) imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
             }
         }, 100);
+    }
+
+    private int getOrientation() {
+        if (PrefsMockup.orientation == PrefsMockup.ORIENTATION_HORIZONTAL) {
+            return LinearLayoutManager.HORIZONTAL;
+        } else {
+            return LinearLayoutManager.VERTICAL;
+        }
     }
 
     public final class PagerController extends PagerSnapHelper implements OnTouchGestureListener.OnTapListener {
