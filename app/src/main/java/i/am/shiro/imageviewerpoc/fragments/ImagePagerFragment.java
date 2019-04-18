@@ -15,7 +15,6 @@ import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
@@ -29,7 +28,7 @@ import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
 import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
-import i.am.shiro.imageviewerpoc.listener.OnTouchGestureListener;
+import i.am.shiro.imageviewerpoc.listener.OnZoneTapListener;
 import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
 
 import static android.support.v4.view.ViewCompat.requireViewById;
@@ -37,7 +36,6 @@ import static java.lang.Math.abs;
 
 public class ImagePagerFragment extends Fragment {
 
-    private int pagerTapZoneWidth;
     private View controlsOverlay;
     private View browseModeChooserOverlay;
     private LinearLayoutManager llm;
@@ -49,7 +47,6 @@ public class ImagePagerFragment extends Fragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_viewer, container, false);
-        pagerTapZoneWidth = getResources().getDimensionPixelSize(R.dimen.tap_zone_width);
 
         initPager(view);
         initControlsOverlay(view);
@@ -75,8 +72,13 @@ public class ImagePagerFragment extends Fragment {
                 .observe(this, adapter::setImageUris);
 
         pagerController = new PagerController(recyclerView);
-        OnTouchGestureListener touchGestureListener = new OnTouchGestureListener(getContext(), pagerController);
-        adapter.setGestureListener(touchGestureListener);
+
+        OnZoneTapListener onZoneTapListener = new OnZoneTapListener(recyclerView)
+                .setOnLeftZoneTapListener(pagerController::onLeftTap)
+                .setOnRightZoneTapListener(pagerController::onRightTap)
+                .setOnMiddleZoneTapListener(pagerController::onMiddleTap);
+
+        adapter.setItemTouchListener(onZoneTapListener);
     }
 
     private void initBrowseModeChooser(View rootView) {
@@ -194,7 +196,7 @@ public class ImagePagerFragment extends Fragment {
         }
     }
 
-    public final class PagerController extends PagerSnapHelper implements OnTouchGestureListener.OnTapListener {
+    public final class PagerController extends PagerSnapHelper {
 
         private final RecyclerView recyclerView;
 
@@ -248,22 +250,22 @@ public class ImagePagerFragment extends Fragment {
             return snapView;
         }
 
-        @Override
-        public boolean onTap(MotionEvent e) {
-            if (e.getX() < pagerTapZoneWidth) { // Left zone
-                if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
-                    previousPage();
-                else
-                    nextPage();
-            } else if (e.getX() > recyclerView.getWidth() - pagerTapZoneWidth) { // Right zone
-                if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
-                    nextPage();
-                else
-                    previousPage();
-            } else { // Center zone
-                controlsOverlay.setVisibility(View.VISIBLE); // TODO AlphaAnimation to make it appear progressively
-            }
-            return false;
+        private void onLeftTap() {
+            if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
+                previousPage();
+            else
+                nextPage();
+        }
+
+        private void onRightTap() {
+            if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
+                nextPage();
+            else
+                previousPage();
+        }
+
+        private void onMiddleTap() {
+            controlsOverlay.setVisibility(View.VISIBLE); // TODO AlphaAnimation to make it appear progressively
         }
     }
 }

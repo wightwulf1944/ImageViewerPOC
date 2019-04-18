@@ -15,15 +15,14 @@ import java.util.List;
 import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter.ViewHolder;
-import i.am.shiro.imageviewerpoc.listener.OnTouchGestureListener;
 
 public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 
     // TODO : SubsamplingScaleImageView does _not_ support animated GIFs -> use pl.droidsonroids.gif:android-gif-drawable when serving a GIF ?
 
-    private OnTouchGestureListener gestureListener;
-    private List<String> imageUris;
+    private View.OnTouchListener itemTouchListener;
 
+    private List<String> imageUris;
 
     @Override
     public int getItemCount() {
@@ -34,8 +33,8 @@ public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder>
         this.imageUris = Collections.unmodifiableList(imageUris);
     }
 
-    public void setGestureListener(OnTouchGestureListener gestureListener) {
-        this.gestureListener = gestureListener;
+    public void setItemTouchListener(View.OnTouchListener itemTouchListener) {
+        this.itemTouchListener = itemTouchListener;
     }
 
     @NonNull
@@ -59,7 +58,7 @@ public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder>
             super(itemView);
             imgView = itemView.findViewById(R.id.item_image);
             imgView.setMinimumScaleType(getScaleType());
-            imgView.setOnTouchListener(gestureListener);
+            imgView.setOnTouchListener(itemTouchListener);
         }
 
         private int getScaleType() {
