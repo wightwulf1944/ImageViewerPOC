@@ -2,22 +2,16 @@ package i.am.shiro.imageviewerpoc.fragments;
 
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Context;
-import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,7 +25,7 @@ import i.am.shiro.imageviewerpoc.widget.RecyclerViewPageWidget;
 
 import static android.support.v4.view.ViewCompat.requireViewById;
 
-public class ImagePagerFragment extends Fragment {
+public class ImagePagerFragment extends Fragment implements GoToPageDialogFragment.Parent {
 
     private View controlsOverlay;
     private View browseModeChooserOverlay;
@@ -121,8 +115,6 @@ public class ImagePagerFragment extends Fragment {
 
     private void initControlsOverlay(View rootView) {
         controlsOverlay = requireViewById(rootView, R.id.image_viewer_controls_overlay);
-        // Tap center of screen
-        controlsOverlay.setOnClickListener(v -> controlsOverlay.setVisibility(View.INVISIBLE));
         // Tap back button
         View backButton = requireViewById(rootView, R.id.viewer_back_btn);
         backButton.setOnClickListener(v -> quitActivity());
@@ -131,7 +123,7 @@ public class ImagePagerFragment extends Fragment {
         settingsButton.setOnClickListener(v -> launchSettings());
         // Page number button
         pageNumber = requireViewById(rootView, R.id.viewer_pagenumber_text);
-        pageNumber.setOnClickListener(v -> inputPageManually());
+        pageNumber.setOnClickListener(v -> GoToPageDialogFragment.show(this));
         // Slider
         seekBar = requireViewById(rootView, R.id.viewer_seekbar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -180,28 +172,6 @@ public class ImagePagerFragment extends Fragment {
         Toast.makeText(getContext(), "Settings not implemented yet", Toast.LENGTH_SHORT).show();
     }
 
-    private void inputPageManually() {
-        AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
-        final EditText input = new EditText(getContext());
-        input.setInputType(InputType.TYPE_CLASS_NUMBER);
-        input.setRawInputType(Configuration.KEYBOARD_12KEY);
-        alert.setView(input);
-        alert.setPositiveButton(android.R.string.ok, (dialog, whichButton) -> {
-            if (input.getText().length() > 0)
-                toPage(Integer.parseInt(input.getText().toString()));
-        });
-        alert.setNegativeButton(android.R.string.cancel, null);
-        alert.show();
-
-        input.postDelayed(() -> {
-            Activity a = getActivity();
-            if (input.requestFocus() && a != null) {
-                InputMethodManager imm = (InputMethodManager) a.getSystemService(Context.INPUT_METHOD_SERVICE);
-                if (imm != null) imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
-            }
-        }, 100);
-    }
-
     private int getOrientation() {
         if (PrefsMockup.orientation == PrefsMockup.ORIENTATION_HORIZONTAL) {
             return LinearLayoutManager.HORIZONTAL;
@@ -223,7 +193,8 @@ public class ImagePagerFragment extends Fragment {
         seekBar.setProgress(currentPosition);
     }
 
-    void toPage(int pageNum) {
+    @Override
+    public void toPage(int pageNum) {
         int itemCount = recyclerView.getAdapter().getItemCount();
         if ((currentPosition == pageNum) || (pageNum >= itemCount)) return;
         currentPosition = pageNum;
@@ -246,6 +217,11 @@ public class ImagePagerFragment extends Fragment {
     }
 
     private void onMiddleTap() {
-        controlsOverlay.setVisibility(View.VISIBLE); // TODO AlphaAnimation to make it appear progressively
+        // TODO AlphaAnimation to make it appear progressively
+        if (View.VISIBLE == controlsOverlay.getVisibility()) {
+            controlsOverlay.setVisibility(View.INVISIBLE);
+        } else {
+            controlsOverlay.setVisibility(View.VISIBLE);
+        }
     }
 }

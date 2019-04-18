@@ -56,7 +56,7 @@ public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder>
 
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
-            imgView = itemView.findViewById(R.id.item_image);
+            imgView = (SubsamplingScaleImageView) itemView;
             imgView.setMinimumScaleType(getScaleType());
             imgView.setOnTouchListener(itemTouchListener);
         }
