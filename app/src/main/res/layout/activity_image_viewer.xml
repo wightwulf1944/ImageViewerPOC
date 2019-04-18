@@ -19,15 +19,15 @@
         tools:listitem="@layout/item_image_view" />
 
     <include
-        android:id="@+id/image_viewer_direction_chooser_overlay"
-        layout="@layout/include_image_viewer_direction"
-        android:visibility="invisible" />
-
-    <include
         android:id="@+id/image_viewer_controls_overlay"
         android:clickable="true"
         android:focusable="true"
         layout="@layout/include_controls_overlay"
+        android:visibility="invisible" />
+
+    <include
+        android:id="@+id/image_viewer_direction_chooser_overlay"
+        layout="@layout/include_image_viewer_direction"
         android:visibility="invisible" />
 
 </android.support.constraint.ConstraintLayout>
