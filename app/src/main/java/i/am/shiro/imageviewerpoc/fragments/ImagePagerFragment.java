@@ -2,6 +2,7 @@ package i.am.shiro.imageviewerpoc.fragments;
 
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -17,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -160,10 +162,19 @@ public class ImagePagerFragment extends Fragment {
         input.setRawInputType(Configuration.KEYBOARD_12KEY);
         alert.setView(input);
         alert.setPositiveButton(android.R.string.ok, (dialog, whichButton) -> {
-            pagerController.toPage(Integer.parseInt(input.getText().toString()));
+            if (input.getText().length() > 0)
+                pagerController.toPage(Integer.parseInt(input.getText().toString()));
         });
         alert.setNegativeButton(android.R.string.cancel, null);
         alert.show();
+
+        input.postDelayed(() -> {
+            Activity a = getActivity();
+            if (input.requestFocus() && a != null) {
+                InputMethodManager imm = (InputMethodManager) a.getSystemService(Context.INPUT_METHOD_SERVICE);
+                if (imm != null) imm.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
+            }
+        }, 100);
     }
 
     public final class PagerController extends PagerSnapHelper implements OnTouchGestureListener.OnTapListener {
