@@ -10,7 +10,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.view.KeyEvent;
@@ -28,19 +27,21 @@ import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
 import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
 import i.am.shiro.imageviewerpoc.widget.OnZoneTapListener;
+import i.am.shiro.imageviewerpoc.widget.RecyclerViewPageWidget;
 
 import static android.support.v4.view.ViewCompat.requireViewById;
-import static java.lang.Math.abs;
 
 public class ImagePagerFragment extends Fragment {
 
     private View controlsOverlay;
     private View browseModeChooserOverlay;
     private LinearLayoutManager llm;
-    private PagerController pagerController;
     private ImageRecyclerAdapter adapter;
     private SeekBar seekBar;
     private TextView pageNumber;
+    private RecyclerView recyclerView;
+    private int currentPosition;
+    private RecyclerViewPageWidget recyclerViewPageWidget;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -56,7 +57,7 @@ public class ImagePagerFragment extends Fragment {
     private void initPager(View rootView) {
         adapter = new ImageRecyclerAdapter();
 
-        RecyclerView recyclerView = requireViewById(rootView, R.id.image_viewer_recycler);
+        recyclerView = requireViewById(rootView, R.id.image_viewer_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
@@ -69,14 +70,21 @@ public class ImagePagerFragment extends Fragment {
                 .getImages()
                 .observe(this, adapter::setImageUris);
 
-        pagerController = new PagerController(recyclerView);
+        recyclerViewPageWidget = new RecyclerViewPageWidget(recyclerView)
+                .setOnCurrentPositionChangeListener(this::onCurrentPositionChange)
+                .setPageSnapEnabled(true);
 
         OnZoneTapListener onZoneTapListener = new OnZoneTapListener(recyclerView)
-                .setOnLeftZoneTapListener(pagerController::onLeftTap)
-                .setOnRightZoneTapListener(pagerController::onRightTap)
-                .setOnMiddleZoneTapListener(pagerController::onMiddleTap);
+                .setOnLeftZoneTapListener(this::onLeftTap)
+                .setOnRightZoneTapListener(this::onRightTap)
+                .setOnMiddleZoneTapListener(this::onMiddleTap);
 
         adapter.setItemTouchListener(onZoneTapListener);
+    }
+
+    private void onCurrentPositionChange(int position) {
+        currentPosition = position;
+        seekBar.setProgress(currentPosition);
     }
 
     private void initBrowseModeChooser(View rootView) {
@@ -101,6 +109,8 @@ public class ImagePagerFragment extends Fragment {
         llm.setOrientation(getOrientation());
 
         browseModeChooserOverlay.setVisibility(View.INVISIBLE);
+
+        recyclerViewPageWidget.setPageSnapEnabled(PrefsMockup.ORIENTATION_VERTICAL != orientation);
     }
 
     private void initControlsOverlay(View rootView) {
@@ -130,7 +140,7 @@ public class ImagePagerFragment extends Fragment {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                 pageNumber.setText(progress + " / " + seekBar.getMax());
-                if (fromUser) pagerController.toPage(progress);
+                if (fromUser) toPage(progress);
             }
         });
     }
@@ -144,10 +154,10 @@ public class ImagePagerFragment extends Fragment {
 
     public boolean onKeyDown(int keyCode) {
         if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            pagerController.previousPage();
+            previousPage();
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            pagerController.nextPage();
+            nextPage();
             return true;
         } else if (keyCode == KeyEvent.KEYCODE_BACK) {
             quitActivity();
@@ -172,7 +182,7 @@ public class ImagePagerFragment extends Fragment {
         alert.setView(input);
         alert.setPositiveButton(android.R.string.ok, (dialog, whichButton) -> {
             if (input.getText().length() > 0)
-                pagerController.toPage(Integer.parseInt(input.getText().toString()));
+                toPage(Integer.parseInt(input.getText().toString()));
         });
         alert.setNegativeButton(android.R.string.cancel, null);
         alert.show();
@@ -194,76 +204,42 @@ public class ImagePagerFragment extends Fragment {
         }
     }
 
-    public final class PagerController extends PagerSnapHelper {
+    void nextPage() {
+        int itemCount = recyclerView.getAdapter().getItemCount();
+        if (currentPosition == itemCount - 1) return;
+        recyclerView.smoothScrollToPosition(++currentPosition);
+        seekBar.setProgress(currentPosition);
+    }
 
-        private final RecyclerView recyclerView;
+    void previousPage() {
+        if (currentPosition == 0) return;
+        recyclerView.smoothScrollToPosition(--currentPosition);
+        seekBar.setProgress(currentPosition);
+    }
 
-        private final int scrollingThresholdVelocity;
+    void toPage(int pageNum) {
+        int itemCount = recyclerView.getAdapter().getItemCount();
+        if ((currentPosition == pageNum) || (pageNum >= itemCount)) return;
+        currentPosition = pageNum;
+        recyclerView.smoothScrollToPosition(currentPosition);
+        seekBar.setProgress(currentPosition);
+    }
 
-        private int currentPosition;
+    private void onLeftTap() {
+        if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
+            previousPage();
+        else
+            nextPage();
+    }
 
-        PagerController(@NonNull RecyclerView recyclerView) {
-            this.recyclerView = recyclerView;
-            scrollingThresholdVelocity = recyclerView.getMinFlingVelocity() * 50;
-            attachToRecyclerView(recyclerView);
-        }
+    private void onRightTap() {
+        if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
+            nextPage();
+        else
+            previousPage();
+    }
 
-        void nextPage() {
-            int itemCount = recyclerView.getAdapter().getItemCount();
-            if (currentPosition == itemCount - 1) return;
-            recyclerView.smoothScrollToPosition(++currentPosition);
-            seekBar.setProgress(currentPosition);
-        }
-
-        void previousPage() {
-            if (currentPosition == 0) return;
-            recyclerView.smoothScrollToPosition(--currentPosition);
-            seekBar.setProgress(currentPosition);
-        }
-
-        void toPage(int pageNum) {
-            int itemCount = recyclerView.getAdapter().getItemCount();
-            if ((currentPosition == pageNum) || (pageNum >= itemCount)) return;
-            currentPosition = pageNum;
-            recyclerView.smoothScrollToPosition(currentPosition);
-            seekBar.setProgress(currentPosition);
-        }
-
-        @Override
-        public boolean onFling(int velocityX, int velocityY) {
-            if (abs(velocityX) >= scrollingThresholdVelocity) {
-                return false;
-            }
-            return super.onFling(velocityX, velocityY);
-        }
-
-        @Nullable
-        @Override
-        public View findSnapView(RecyclerView.LayoutManager layoutManager) {
-            View snapView = super.findSnapView(layoutManager);
-            if (snapView != null) {
-                currentPosition = layoutManager.getPosition(snapView);
-                seekBar.setProgress(currentPosition);
-            }
-            return snapView;
-        }
-
-        private void onLeftTap() {
-            if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
-                previousPage();
-            else
-                nextPage();
-        }
-
-        private void onRightTap() {
-            if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
-                nextPage();
-            else
-                previousPage();
-        }
-
-        private void onMiddleTap() {
-            controlsOverlay.setVisibility(View.VISIBLE); // TODO AlphaAnimation to make it appear progressively
-        }
+    private void onMiddleTap() {
+        controlsOverlay.setVisibility(View.VISIBLE); // TODO AlphaAnimation to make it appear progressively
     }
 }
