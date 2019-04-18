@@ -2,18 +2,22 @@ package i.am.shiro.imageviewerpoc.fragments;
 
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.PagerSnapHelper;
 import android.support.v7.widget.RecyclerView;
+import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -100,6 +104,7 @@ public class ImagePagerFragment extends Fragment {
         settingsButton.setOnClickListener(v -> launchSettings());
         // Page number button
         pageNumber = requireViewById(rootView, R.id.viewer_pagenumber_text);
+        pageNumber.setOnClickListener(v -> inputPageManually());
         // Slider
         seekBar = requireViewById(rootView, R.id.viewer_seekbar);
         seekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
@@ -148,6 +153,19 @@ public class ImagePagerFragment extends Fragment {
         Toast.makeText(getContext(), "Settings not implemented yet", Toast.LENGTH_SHORT).show();
     }
 
+    private void inputPageManually() {
+        AlertDialog.Builder alert = new AlertDialog.Builder(requireContext());
+        final EditText input = new EditText(getContext());
+        input.setInputType(InputType.TYPE_CLASS_NUMBER);
+        input.setRawInputType(Configuration.KEYBOARD_12KEY);
+        alert.setView(input);
+        alert.setPositiveButton(android.R.string.ok, (dialog, whichButton) -> {
+            pagerController.toPage(Integer.parseInt(input.getText().toString()));
+        });
+        alert.setNegativeButton(android.R.string.cancel, null);
+        alert.show();
+    }
+
     public final class PagerController extends PagerSnapHelper implements OnTouchGestureListener.OnTapListener {
 
         private final RecyclerView recyclerView;
@@ -180,6 +198,7 @@ public class ImagePagerFragment extends Fragment {
             if ((currentPosition == pageNum) || (pageNum >= itemCount)) return;
             currentPosition = pageNum;
             recyclerView.smoothScrollToPosition(currentPosition);
+            seekBar.setProgress(currentPosition);
         }
 
         @Override
@@ -196,6 +215,7 @@ public class ImagePagerFragment extends Fragment {
             View snapView = super.findSnapView(layoutManager);
             if (snapView != null) {
                 currentPosition = layoutManager.getPosition(snapView);
+                seekBar.setProgress(currentPosition);
             }
             return snapView;
         }
