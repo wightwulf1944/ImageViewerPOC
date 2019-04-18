@@ -115,8 +115,6 @@ public class ImagePagerFragment extends Fragment {
 
     private void initControlsOverlay(View rootView) {
         controlsOverlay = requireViewById(rootView, R.id.image_viewer_controls_overlay);
-        // Tap center of screen
-        controlsOverlay.setOnClickListener(v -> controlsOverlay.setVisibility(View.INVISIBLE));
         // Tap back button
         View backButton = requireViewById(rootView, R.id.viewer_back_btn);
         backButton.setOnClickListener(v -> quitActivity());
@@ -240,6 +238,11 @@ public class ImagePagerFragment extends Fragment {
     }
 
     private void onMiddleTap() {
-        controlsOverlay.setVisibility(View.VISIBLE); // TODO AlphaAnimation to make it appear progressively
+        // TODO AlphaAnimation to make it appear progressively
+        if (View.VISIBLE == controlsOverlay.getVisibility()) {
+            controlsOverlay.setVisibility(View.INVISIBLE);
+        } else {
+            controlsOverlay.setVisibility(View.VISIBLE);
+        }
     }
 }
