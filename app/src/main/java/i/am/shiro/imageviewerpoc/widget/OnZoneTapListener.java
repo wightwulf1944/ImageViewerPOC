@@ -1,4 +1,4 @@
-package i.am.shiro.imageviewerpoc.listener;
+package i.am.shiro.imageviewerpoc.widget;
 
 import android.content.Context;
 import android.support.v4.view.GestureDetectorCompat;

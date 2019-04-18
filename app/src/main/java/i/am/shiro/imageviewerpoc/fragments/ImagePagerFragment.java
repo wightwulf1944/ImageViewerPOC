@@ -23,13 +23,11 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.davemorrissey.labs.subscaleview.SubsamplingScaleImageView;
-
 import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
-import i.am.shiro.imageviewerpoc.listener.OnZoneTapListener;
 import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
+import i.am.shiro.imageviewerpoc.widget.OnZoneTapListener;
 
 import static android.support.v4.view.ViewCompat.requireViewById;
 import static java.lang.Math.abs;
