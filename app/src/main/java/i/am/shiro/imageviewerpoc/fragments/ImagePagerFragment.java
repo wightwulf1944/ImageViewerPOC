@@ -23,13 +23,10 @@ import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
 import static android.support.v4.view.ViewCompat.requireViewById;
 import static java.lang.Math.abs;
 
-/**
- * TODO
- * <p>
- */
 public class ImagePagerFragment extends Fragment {
 
     private int pagerTapZoneWidth;
+    private View controlsOverlay;
     private View directionChooserOverlay;
     private LinearLayoutManager llm;
     private PagerController pagerController;
@@ -41,7 +38,7 @@ public class ImagePagerFragment extends Fragment {
 
         ImageRecyclerAdapter adapter = new ImageRecyclerAdapter();
 
-        RecyclerView recyclerView = requireViewById(view, R.id.recycler_image);
+        RecyclerView recyclerView = requireViewById(view, R.id.image_viewer_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
 
@@ -58,8 +55,11 @@ public class ImagePagerFragment extends Fragment {
         OnTouchGestureListener touchGestureListener = new OnTouchGestureListener(getContext(), pagerController);
         adapter.setGestureListener(touchGestureListener);
 
+        controlsOverlay = requireViewById(view, R.id.image_viewer_controls_overlay);
+        controlsOverlay.setOnClickListener(v -> controlsOverlay.setVisibility(View.GONE));
+
         if (PrefsMockup.DIRECTION_NONE == PrefsMockup.readingDirection) {
-            directionChooserOverlay = requireViewById(view, R.id.direction_chooser_overlay);
+            directionChooserOverlay = requireViewById(view, R.id.image_viewer_direction_chooser_overlay);
             directionChooserOverlay.setVisibility(View.VISIBLE);
 
             View ltrButton = requireViewById(view, R.id.chooseDirectionLtr);
@@ -134,16 +134,18 @@ public class ImagePagerFragment extends Fragment {
 
         @Override
         public boolean onTap(MotionEvent e) {
-            if (e.getX() < pagerTapZoneWidth) {
+            if (e.getX() < pagerTapZoneWidth) { // Left zone
                 if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
                     previousPage();
                 else
                     nextPage();
-            } else if (e.getX() > recyclerView.getWidth() - pagerTapZoneWidth) {
+            } else if (e.getX() > recyclerView.getWidth() - pagerTapZoneWidth) { // Right zone
                 if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
                     nextPage();
                 else
                     previousPage();
+            } else { // Center zone
+                controlsOverlay.setVisibility(View.VISIBLE);
             }
             return false;
         }

@@ -7,7 +7,7 @@
     tools:context=".activities.ImageViewerActivity">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/recycler_image"
+        android:id="@+id/image_viewer_recycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="horizontal"
@@ -19,8 +19,15 @@
         tools:listitem="@layout/item_image_view" />
 
     <include
-        android:id="@+id/direction_chooser_overlay"
+        android:id="@+id/image_viewer_direction_chooser_overlay"
         layout="@layout/include_image_viewer_direction"
+        android:visibility="gone" />
+
+    <include
+        android:id="@+id/image_viewer_controls_overlay"
+        android:clickable="true"
+        android:focusable="true"
+        layout="@layout/include_controls_overlay"
         android:visibility="gone" />
 
 </android.support.constraint.ConstraintLayout>
