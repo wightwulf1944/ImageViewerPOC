@@ -16,6 +16,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.List;
+
 import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
@@ -47,7 +49,17 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         if (PrefsMockup.DIRECTION_NONE == PrefsMockup.readingDirection) initBrowseModeChooser(view);
         initBrowseModeChooser(view);
 
+        ViewModelProviders.of(requireActivity())
+                .get(ImageViewerViewModel.class)
+                .getImages()
+                .observe(this, this::onImagesChanged);
+
         return view;
+    }
+
+    private void onImagesChanged(List<String> images) {
+        adapter.setImageUris(images);
+        seekBar.setMax(images.size() - 1);
     }
 
     private void initPager(View rootView) {
@@ -61,11 +73,6 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(llm);
-
-        ViewModelProviders.of(requireActivity())
-                .get(ImageViewerViewModel.class)
-                .getImages()
-                .observe(this, adapter::setImageUris);
 
         pageSnapWidget = new PageSnapWidget(recyclerView)
                 .setPageSnapEnabled(true)
@@ -134,17 +141,11 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                pageNumber.setText(progress + " / " + seekBar.getMax());
+                String text = String.format("%s / %s", progress + 1, seekBar.getMax() + 1);
+                pageNumber.setText(text);
                 if (fromUser) toPage(progress);
             }
         });
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Has to be called there because the adapter hasn't observed the image list yet when called from onCreateView
-        seekBar.setMax(adapter.getItemCount());
     }
 
     public boolean onKeyDown(int keyCode) {
