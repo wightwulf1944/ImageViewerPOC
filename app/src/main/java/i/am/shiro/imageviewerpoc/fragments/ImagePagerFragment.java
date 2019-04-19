@@ -21,7 +21,8 @@ import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
 import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
 import i.am.shiro.imageviewerpoc.widget.OnZoneTapListener;
-import i.am.shiro.imageviewerpoc.widget.RecyclerViewPageWidget;
+import i.am.shiro.imageviewerpoc.widget.PageSnapWidget;
+import i.am.shiro.imageviewerpoc.widget.ScrollPositionListener;
 
 import static android.support.v4.view.ViewCompat.requireViewById;
 
@@ -35,7 +36,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     private TextView pageNumber;
     private RecyclerView recyclerView;
     private int currentPosition;
-    private RecyclerViewPageWidget recyclerViewPageWidget;
+    private PageSnapWidget pageSnapWidget;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -54,6 +55,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         recyclerView = requireViewById(rootView, R.id.image_viewer_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
+        recyclerView.addOnScrollListener(new ScrollPositionListener(this::onCurrentPositionChange));
 
         llm = new LinearLayoutManager(getContext());
         llm.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -64,9 +66,9 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
                 .getImages()
                 .observe(this, adapter::setImageUris);
 
-        recyclerViewPageWidget = new RecyclerViewPageWidget(recyclerView)
-                .setOnCurrentPositionChangeListener(this::onCurrentPositionChange)
-                .setPageSnapEnabled(true);
+        pageSnapWidget = new PageSnapWidget(recyclerView)
+                .setPageSnapEnabled(true)
+                .setFlingFactor(50);
 
         OnZoneTapListener onZoneTapListener = new OnZoneTapListener(recyclerView)
                 .setOnLeftZoneTapListener(this::onLeftTap)
@@ -110,7 +112,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
 
         browseModeChooserOverlay.setVisibility(View.INVISIBLE);
 
-        recyclerViewPageWidget.setPageSnapEnabled(PrefsMockup.ORIENTATION_VERTICAL != orientation);
+        pageSnapWidget.setPageSnapEnabled(PrefsMockup.ORIENTATION_VERTICAL != orientation);
     }
 
     private void initControlsOverlay(View rootView) {
