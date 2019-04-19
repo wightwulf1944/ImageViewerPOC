@@ -55,7 +55,16 @@ public class ImageViewerActivity extends AppCompatActivity {
 
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (fragment != null) return fragment.onKeyDown(keyCode);
-        else return super.onKeyDown(keyCode, event);
+        if (fragment != null) {
+            if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
+                fragment.previousPage();
+                return true;
+            } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
+                fragment.nextPage();
+                return true;
+            }
+            return super.onKeyDown(keyCode, event);
+        }
+        return super.onKeyDown(keyCode, event);
     }
 }

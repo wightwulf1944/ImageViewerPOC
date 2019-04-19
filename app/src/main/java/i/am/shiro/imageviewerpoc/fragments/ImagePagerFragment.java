@@ -1,6 +1,5 @@
 package i.am.shiro.imageviewerpoc.fragments;
 
-import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -8,7 +7,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,6 +25,7 @@ import i.am.shiro.imageviewerpoc.widget.PageSnapWidget;
 import i.am.shiro.imageviewerpoc.widget.ScrollPositionListener;
 
 import static android.support.v4.view.ViewCompat.requireViewById;
+import static java.lang.String.format;
 
 public class ImagePagerFragment extends Fragment implements GoToPageDialogFragment.Parent {
 
@@ -37,8 +36,10 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     private SeekBar seekBar;
     private TextView pageNumber;
     private RecyclerView recyclerView;
-    private int currentPosition;
     private PageSnapWidget pageSnapWidget;
+
+    private int currentPosition;
+    private int maxPosition;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,11 +56,6 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
                 .observe(this, this::onImagesChanged);
 
         return view;
-    }
-
-    private void onImagesChanged(List<String> images) {
-        adapter.setImageUris(images);
-        seekBar.setMax(images.size() - 1);
     }
 
     private void initPager(View rootView) {
@@ -86,45 +82,14 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         adapter.setItemTouchListener(onZoneTapListener);
     }
 
-    private void onCurrentPositionChange(int position) {
-        currentPosition = position;
-        seekBar.setProgress(currentPosition);
-    }
-
-    private void initBrowseModeChooser(View rootView) {
-        browseModeChooserOverlay = requireViewById(rootView, R.id.image_viewer_browse_mode_chooser_overlay);
-        browseModeChooserOverlay.setVisibility(View.VISIBLE);
-
-        View ltrButton = requireViewById(browseModeChooserOverlay, R.id.chooseHorizontalLtr);
-        ltrButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_HORIZONTAL));
-
-        View rtlButton = requireViewById(browseModeChooserOverlay, R.id.chooseHorizontalRtl);
-        rtlButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_RTL, PrefsMockup.ORIENTATION_HORIZONTAL));
-
-        View verticalButton = requireViewById(browseModeChooserOverlay, R.id.chooseVertical);
-        verticalButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_VERTICAL));
-    }
-
-    private void chooseBrowseMode(int readingDirection, int orientation) {
-        PrefsMockup.readingDirection = readingDirection;
-        PrefsMockup.orientation = orientation;
-
-        llm.setReverseLayout(PrefsMockup.DIRECTION_RTL == readingDirection);
-        llm.setOrientation(getOrientation());
-
-        browseModeChooserOverlay.setVisibility(View.INVISIBLE);
-
-        pageSnapWidget.setPageSnapEnabled(PrefsMockup.ORIENTATION_VERTICAL != orientation);
-    }
-
     private void initControlsOverlay(View rootView) {
         controlsOverlay = requireViewById(rootView, R.id.image_viewer_controls_overlay);
         // Tap back button
         View backButton = requireViewById(rootView, R.id.viewer_back_btn);
-        backButton.setOnClickListener(v -> quitActivity());
+        backButton.setOnClickListener(v -> onBackClick());
         // Tap settings button
         View settingsButton = requireViewById(rootView, R.id.viewer_settings_btn);
-        settingsButton.setOnClickListener(v -> launchSettings());
+        settingsButton.setOnClickListener(v -> onSettingsClick());
         // Page number button
         pageNumber = requireViewById(rootView, R.id.viewer_pagenumber_text);
         pageNumber.setOnClickListener(v -> GoToPageDialogFragment.show(this));
@@ -141,33 +106,61 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
 
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                String text = String.format("%s / %s", progress + 1, seekBar.getMax() + 1);
-                pageNumber.setText(text);
-                if (fromUser) toPage(progress);
+                if (fromUser) seekToPosition(progress);
             }
         });
     }
 
-    public boolean onKeyDown(int keyCode) {
-        if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-            previousPage();
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-            nextPage();
-            return true;
-        } else if (keyCode == KeyEvent.KEYCODE_BACK) {
-            quitActivity();
-        }
-        return false;
+    private void initBrowseModeChooser(View rootView) {
+        browseModeChooserOverlay = requireViewById(rootView, R.id.image_viewer_browse_mode_chooser_overlay);
+        browseModeChooserOverlay.setVisibility(View.VISIBLE);
+
+        View ltrButton = requireViewById(browseModeChooserOverlay, R.id.chooseHorizontalLtr);
+        ltrButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_HORIZONTAL));
+
+        View rtlButton = requireViewById(browseModeChooserOverlay, R.id.chooseHorizontalRtl);
+        rtlButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_RTL, PrefsMockup.ORIENTATION_HORIZONTAL));
+
+        View verticalButton = requireViewById(browseModeChooserOverlay, R.id.chooseVertical);
+        verticalButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_VERTICAL));
     }
 
-    private void quitActivity() {
-        Activity a = getActivity();
-        if (a != null) a.onBackPressed();
+    private void onBackClick() {
+        requireActivity().onBackPressed();
     }
 
-    private void launchSettings() {
+    private void onSettingsClick() {
         Toast.makeText(getContext(), "Settings not implemented yet", Toast.LENGTH_SHORT).show();
+    }
+
+    private void onImagesChanged(List<String> images) {
+        maxPosition = images.size() - 1;
+        adapter.setImageUris(images);
+        seekBar.setMax(maxPosition);
+        updatePageDisplay();
+    }
+
+    private void onCurrentPositionChange(int position) {
+        currentPosition = position;
+        seekBar.setProgress(currentPosition);
+        updatePageDisplay();
+    }
+
+    private void updatePageDisplay() {
+        String pageDisplayText = format("%s / %s", currentPosition + 1, maxPosition + 1);
+        pageNumber.setText(pageDisplayText);
+    }
+
+    private void chooseBrowseMode(int readingDirection, int orientation) {
+        PrefsMockup.readingDirection = readingDirection;
+        PrefsMockup.orientation = orientation;
+
+        llm.setReverseLayout(PrefsMockup.DIRECTION_RTL == readingDirection);
+        llm.setOrientation(getOrientation());
+
+        browseModeChooserOverlay.setVisibility(View.INVISIBLE);
+
+        pageSnapWidget.setPageSnapEnabled(PrefsMockup.ORIENTATION_VERTICAL != orientation);
     }
 
     private int getOrientation() {
@@ -178,26 +171,29 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         }
     }
 
-    void nextPage() {
-        int itemCount = recyclerView.getAdapter().getItemCount();
-        if (currentPosition == itemCount - 1) return;
-        recyclerView.smoothScrollToPosition(++currentPosition);
-        seekBar.setProgress(currentPosition);
+    public void nextPage() {
+        if (currentPosition == maxPosition) return;
+        recyclerView.smoothScrollToPosition(currentPosition + 1);
     }
 
-    void previousPage() {
+    public void previousPage() {
         if (currentPosition == 0) return;
-        recyclerView.smoothScrollToPosition(--currentPosition);
-        seekBar.setProgress(currentPosition);
+        recyclerView.smoothScrollToPosition(currentPosition - 1);
+    }
+
+    private void seekToPosition(int position) {
+        if (position == currentPosition + 1 || position == currentPosition - 1) {
+            recyclerView.smoothScrollToPosition(position);
+        } else {
+            recyclerView.scrollToPosition(position);
+        }
     }
 
     @Override
-    public void toPage(int pageNum) {
-        int itemCount = recyclerView.getAdapter().getItemCount();
-        if ((currentPosition == pageNum) || (pageNum >= itemCount)) return;
-        currentPosition = pageNum;
-        recyclerView.smoothScrollToPosition(currentPosition);
-        seekBar.setProgress(currentPosition);
+    public void goToPage(int pageNum) {
+        int position = pageNum - 1;
+        if (position == currentPosition || position < 0 || position > maxPosition) return;
+        seekToPosition(position);
     }
 
     private void onLeftTap() {

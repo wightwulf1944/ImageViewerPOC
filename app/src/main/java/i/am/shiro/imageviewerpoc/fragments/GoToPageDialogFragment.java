@@ -37,7 +37,7 @@ public final class GoToPageDialogFragment extends DialogFragment {
 
         DialogInterface.OnClickListener positive = (dialog, whichButton) -> {
             if (input.getText().length() > 0)
-                parent.toPage(Integer.parseInt(input.getText().toString()));
+                parent.goToPage(Integer.parseInt(input.getText().toString()));
         };
 
         AlertDialog dialog = new AlertDialog.Builder(requireContext())
@@ -52,6 +52,6 @@ public final class GoToPageDialogFragment extends DialogFragment {
     }
 
     public interface Parent {
-        void toPage(int pageNum);
+        void goToPage(int pageNum);
     }
 }
