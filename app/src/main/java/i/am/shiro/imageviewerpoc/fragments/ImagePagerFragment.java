@@ -45,6 +45,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         initPager(view);
         initControlsOverlay(view);
         if (PrefsMockup.DIRECTION_NONE == PrefsMockup.readingDirection) initBrowseModeChooser(view);
+        initBrowseModeChooser(view);
 
         return view;
     }
@@ -87,20 +88,14 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         browseModeChooserOverlay = requireViewById(rootView, R.id.image_viewer_browse_mode_chooser_overlay);
         browseModeChooserOverlay.setVisibility(View.VISIBLE);
 
-        View ltrButton = requireViewById(rootView, R.id.chooseHorizontalLtr);
-        View ltrText = requireViewById(rootView, R.id.chooseDirectionLtrText);
+        View ltrButton = requireViewById(browseModeChooserOverlay, R.id.chooseHorizontalLtr);
         ltrButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_HORIZONTAL));
-        ltrText.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_HORIZONTAL));
 
-        View rtlButton = requireViewById(rootView, R.id.chooseHorizontalRtl);
-        View rtlText = requireViewById(rootView, R.id.chooseDirectionRtlText);
+        View rtlButton = requireViewById(browseModeChooserOverlay, R.id.chooseHorizontalRtl);
         rtlButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_RTL, PrefsMockup.ORIENTATION_HORIZONTAL));
-        rtlText.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_RTL, PrefsMockup.ORIENTATION_HORIZONTAL));
 
-        View verticalButton = requireViewById(rootView, R.id.chooseVertical);
-        View verticalText = requireViewById(rootView, R.id.chooseVerticalText);
+        View verticalButton = requireViewById(browseModeChooserOverlay, R.id.chooseVertical);
         verticalButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_VERTICAL));
-        verticalText.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_VERTICAL));
     }
 
     private void chooseBrowseMode(int readingDirection, int orientation) {
