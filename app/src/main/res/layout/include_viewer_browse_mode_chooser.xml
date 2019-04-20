@@ -46,7 +46,7 @@
             android:layout_height="80dp"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_direction_ltr"
+            android:src="@drawable/ic_direction_ltr_icons"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -79,7 +79,7 @@
             android:layout_height="80dp"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_direction_rtl"
+            android:src="@drawable/ic_direction_rtl_icons"
             tools:ignore="ContentDescription" />
 
         <TextView
@@ -107,7 +107,7 @@
             android:layout_height="80dp"
             android:layout_gravity="center"
             android:scaleType="fitCenter"
-            android:src="@drawable/ic_direction_vertical"
+            android:src="@drawable/ic_direction_ttb_icons"
             tools:ignore="ContentDescription" />
 
         <TextView
