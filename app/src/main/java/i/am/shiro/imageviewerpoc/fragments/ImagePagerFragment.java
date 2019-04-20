@@ -1,6 +1,8 @@
 package i.am.shiro.imageviewerpoc.fragments;
 
+import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -54,6 +56,8 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
                 .get(ImageViewerViewModel.class)
                 .getImages()
                 .observe(this, this::onImagesChanged);
+
+        setStatusBarButtonsVisibility(requireActivity(), false);
 
         return view;
     }
@@ -214,8 +218,30 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         // TODO AlphaAnimation to make it appear progressively
         if (View.VISIBLE == controlsOverlay.getVisibility()) {
             controlsOverlay.setVisibility(View.INVISIBLE);
+            setStatusBarButtonsVisibility(requireActivity(), false);
         } else {
             controlsOverlay.setVisibility(View.VISIBLE);
+            setStatusBarButtonsVisibility(requireActivity(), true);
+        }
+    }
+
+    private void setStatusBarButtonsVisibility(Activity activity, boolean visible) {
+        // SYSTEM_UI_FLAG_IMMERSIVE is only available since Kitkat. Hiding the system UI
+        // without this flag is pointless, as any screentap would show the system UI again...
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+            View decorView = activity.getWindow().getDecorView();
+            int uiOptions;
+            if (visible) {
+                uiOptions = View.SYSTEM_UI_FLAG_VISIBLE
+                        /*
+                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN*/;
+            } else {
+                uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE
+                        | View.SYSTEM_UI_FLAG_FULLSCREEN
+                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
+            }
+            decorView.setSystemUiVisibility(uiOptions);
         }
     }
 }
