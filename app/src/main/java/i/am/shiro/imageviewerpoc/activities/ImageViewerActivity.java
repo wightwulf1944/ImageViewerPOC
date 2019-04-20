@@ -11,6 +11,7 @@ import android.view.WindowManager;
 
 import java.util.List;
 
+import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.fragments.ImagePagerFragment;
 import i.am.shiro.imageviewerpoc.util.BundleManager;
 import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
@@ -26,9 +27,11 @@ public class ImageViewerActivity extends AppCompatActivity {
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Intent intent = getIntent();
+        int openPageIndex = -1;
         if (intent != null) {
             BundleManager manager = new BundleManager(intent.getExtras());
             List<String> uris = manager.getUrisStr();
+            if (PrefsMockup.resume_where_last_finished) openPageIndex = manager.getOpenPageIndex();
 
             if (null == uris) {
                 throw new RuntimeException("Initialization failed");
@@ -45,7 +48,11 @@ public class ImageViewerActivity extends AppCompatActivity {
         }
 
         if (null == savedInstanceState) {
+            Bundle bundle = new Bundle();
+            if (openPageIndex > -1) bundle.putInt("openPageIndex", openPageIndex);
+
             fragment = new ImagePagerFragment();
+            fragment.setArguments(bundle);
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(android.R.id.content, fragment)

@@ -17,4 +17,6 @@ public class PrefsMockup {
     public static int readingDirection = DIRECTION_NONE;
     public static int orientation = ORIENTATION_HORIZONTAL;
     public static boolean snapping = true;
+
+    public static boolean resume_where_last_finished = true;
 }

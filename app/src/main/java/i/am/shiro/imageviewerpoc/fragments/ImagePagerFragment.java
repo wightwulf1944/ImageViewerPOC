@@ -40,12 +40,19 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     private RecyclerView recyclerView;
     private PageSnapWidget pageSnapWidget;
 
+    private int openPageIndex;
     private int currentPosition;
     private int maxPosition;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_viewer, container, false);
+
+        openPageIndex = -1;
+        Bundle bundle = getArguments();
+        if (bundle != null) {
+            openPageIndex = getArguments().getInt("openPageIndex", -1);
+        }
 
         initPager(view);
         initControlsOverlay(view);
@@ -141,7 +148,12 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         maxPosition = images.size() - 1;
         adapter.setImageUris(images);
         seekBar.setMax(maxPosition);
-        updatePageDisplay();
+        if (openPageIndex > -1) {
+            goToPage(openPageIndex + 1);
+            openPageIndex = -1; // It only has to happen once
+        } else {
+            updatePageDisplay();
+        }
     }
 
     private void onCurrentPositionChange(int position) {

@@ -11,6 +11,7 @@ public class BundleManager {
 
     private static final String KEY_URIS = "uris";
     private static final String KEY_URIS_STR = "urisStr";
+    private static final String KEY_OPEN_PAGE = "openPage";
 
     private final Bundle bundle;
 
@@ -49,9 +50,16 @@ public class BundleManager {
         bundle.putStringArrayList(KEY_URIS_STR, uriList);
     }
 
+    public void setOpenPageIndex(int pageIndex) {
+        bundle.putInt(KEY_OPEN_PAGE, pageIndex);
+    }
+
     @Nullable
     public List<String> getUrisStr() {
         return bundle.getStringArrayList(KEY_URIS_STR);
     }
 
+    public int getOpenPageIndex() {
+        return bundle.getInt(KEY_OPEN_PAGE, -1);
+    }
 }

@@ -1,6 +1,5 @@
 package i.am.shiro.imageviewerpoc.activities;
 
-import android.Manifest;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Environment;
@@ -41,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private void launchViewer() {
         BundleManager manager = new BundleManager();
         manager.setUrisStr(images); // TODO - consider using java.net.Uri instead
+        manager.setOpenPageIndex(2);
 
         Intent viewer = new Intent(this, ImageViewerActivity.class);
         viewer.putExtras(manager.getBundle());
