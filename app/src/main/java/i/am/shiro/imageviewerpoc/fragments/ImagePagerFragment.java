@@ -145,6 +145,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
 
         requireActivity().getSupportFragmentManager().beginTransaction()
                 .replace(android.R.id.content, fragment)
+                .addToBackStack(null)
                 .commit();
         setActionBarVisibility(requireActivity(), true);
         setStatusBarButtonsVisibility(requireActivity(), true);
