@@ -25,9 +25,4 @@
         layout="@layout/include_viewer_controls"
         android:visibility="invisible" />
 
-    <include
-        android:id="@+id/image_viewer_browse_mode_chooser_overlay"
-        layout="@layout/include_viewer_browse_mode_chooser"
-        android:visibility="invisible" />
-
 </android.support.constraint.ConstraintLayout>

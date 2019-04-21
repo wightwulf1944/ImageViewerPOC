@@ -2,6 +2,7 @@ package i.am.shiro.imageviewerpoc.fragments;
 
 import android.app.Activity;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -32,8 +33,9 @@ import static java.lang.String.format;
 
 public class ImagePagerFragment extends Fragment implements GoToPageDialogFragment.Parent {
 
+    private final int REQUEST_CODE = 1;
+
     private View controlsOverlay;
-    private View browseModeChooserOverlay;
     private PrefetchLinearLayoutManager llm;
     private ImageRecyclerAdapter adapter;
     private SeekBar seekBar;
@@ -57,8 +59,6 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
 
         initPager(view);
         initControlsOverlay(view);
-        if (PrefsMockup.DIRECTION_NONE == PrefsMockup.readingDirection) initBrowseModeChooser(view);
-        initBrowseModeChooser(view);
 
         ViewModelProviders.of(requireActivity())
                 .get(ImageViewerViewModel.class)
@@ -68,6 +68,13 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         setStatusBarButtonsVisibility(requireActivity(), false);
 
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (PrefsMockup.DIRECTION_NONE == PrefsMockup.readingDirection)
+            BrowseModeDialogFragment.invoke(requireActivity().getSupportFragmentManager(), this, REQUEST_CODE);
     }
 
     private void initPager(View rootView) {
@@ -125,20 +132,6 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         });
     }
 
-    private void initBrowseModeChooser(View rootView) {
-        browseModeChooserOverlay = requireViewById(rootView, R.id.image_viewer_browse_mode_chooser_overlay);
-        browseModeChooserOverlay.setVisibility(View.VISIBLE);
-
-        View ltrButton = requireViewById(browseModeChooserOverlay, R.id.chooseHorizontalLtr);
-        ltrButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_HORIZONTAL));
-
-        View rtlButton = requireViewById(browseModeChooserOverlay, R.id.chooseHorizontalRtl);
-        rtlButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_RTL, PrefsMockup.ORIENTATION_HORIZONTAL));
-
-        View verticalButton = requireViewById(browseModeChooserOverlay, R.id.chooseVertical);
-        verticalButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_VERTICAL));
-    }
-
     private void onBackClick() {
         requireActivity().onBackPressed();
     }
@@ -170,18 +163,13 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         pageNumber.setText(pageDisplayText);
     }
 
-    private void chooseBrowseMode(int readingDirection, int orientation) {
-        PrefsMockup.readingDirection = readingDirection;
-        PrefsMockup.orientation = orientation;
-
-        llm.setItemPrefetchEnabled(true);
-        llm.setInitialPrefetchItemCount(2);
-        llm.setReverseLayout(PrefsMockup.DIRECTION_RTL == readingDirection);
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        llm.setReverseLayout(PrefsMockup.DIRECTION_RTL == PrefsMockup.readingDirection);
         llm.setOrientation(getOrientation());
 
-        browseModeChooserOverlay.setVisibility(View.INVISIBLE);
-
-        pageSnapWidget.setPageSnapEnabled(PrefsMockup.ORIENTATION_VERTICAL != orientation);
+        pageSnapWidget.setPageSnapEnabled(PrefsMockup.ORIENTATION_VERTICAL != PrefsMockup.orientation);
     }
 
     private int getOrientation() {
