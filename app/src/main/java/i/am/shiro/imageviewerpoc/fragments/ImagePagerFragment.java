@@ -24,6 +24,7 @@ import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
 import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
 import i.am.shiro.imageviewerpoc.widget.OnZoneTapListener;
 import i.am.shiro.imageviewerpoc.widget.PageSnapWidget;
+import i.am.shiro.imageviewerpoc.widget.PrefetchLinearLayoutManager;
 import i.am.shiro.imageviewerpoc.widget.ScrollPositionListener;
 
 import static android.support.v4.view.ViewCompat.requireViewById;
@@ -33,7 +34,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
 
     private View controlsOverlay;
     private View browseModeChooserOverlay;
-    private LinearLayoutManager llm;
+    private PrefetchLinearLayoutManager llm;
     private ImageRecyclerAdapter adapter;
     private SeekBar seekBar;
     private TextView pageNumber;
@@ -77,7 +78,9 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(new ScrollPositionListener(this::onCurrentPositionChange));
 
-        llm = new LinearLayoutManager(getContext());
+        llm = new PrefetchLinearLayoutManager(getContext());
+        llm.setItemPrefetchEnabled(true);
+        llm.setPreloadItemCount(2);
         llm.setOrientation(LinearLayoutManager.HORIZONTAL);
         recyclerView.setLayoutManager(llm);
 
@@ -171,6 +174,8 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         PrefsMockup.readingDirection = readingDirection;
         PrefsMockup.orientation = orientation;
 
+        llm.setItemPrefetchEnabled(true);
+        llm.setInitialPrefetchItemCount(2);
         llm.setReverseLayout(PrefsMockup.DIRECTION_RTL == readingDirection);
         llm.setOrientation(getOrientation());
 
@@ -244,10 +249,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
             View decorView = activity.getWindow().getDecorView();
             int uiOptions;
             if (visible) {
-                uiOptions = View.SYSTEM_UI_FLAG_VISIBLE
-                        /*
-                        | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN*/;
+                uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
             } else {
                 uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE
                         | View.SYSTEM_UI_FLAG_FULLSCREEN

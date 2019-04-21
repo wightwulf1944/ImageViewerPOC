@@ -15,6 +15,7 @@ import java.util.List;
 import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter.ViewHolder;
+import timber.log.Timber;
 
 public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 
