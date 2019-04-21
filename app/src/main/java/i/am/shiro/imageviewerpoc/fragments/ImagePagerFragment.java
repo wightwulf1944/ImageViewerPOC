@@ -21,7 +21,6 @@ import java.util.List;
 
 import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
-import i.am.shiro.imageviewerpoc.activities.ImageViewerActivity;
 import i.am.shiro.imageviewerpoc.activities.ImageViewerPrefsActivity;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
 import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
@@ -146,7 +145,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         maxPosition = images.size() - 1;
         adapter.setImageUris(images);
         seekBar.setMax(maxPosition);
-        if (openPageIndex > -1) {
+        if (openPageIndex > -1) { // Go to last remembered position, if set
             goToPage(openPageIndex + 1);
             openPageIndex = -1; // It only has to happen once
         } else {
@@ -154,6 +153,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         }
     }
 
+    // Scroll listener
     private void onCurrentPositionChange(int position) {
         currentPosition = position;
         seekBar.setProgress(currentPosition);
