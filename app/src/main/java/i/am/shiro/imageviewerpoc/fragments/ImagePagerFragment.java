@@ -8,13 +8,12 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -22,6 +21,8 @@ import java.util.List;
 
 import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
+import i.am.shiro.imageviewerpoc.activities.ImageViewerActivity;
+import i.am.shiro.imageviewerpoc.activities.ImageViewerPrefsActivity;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
 import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
 import i.am.shiro.imageviewerpoc.widget.OnZoneTapListener;
@@ -33,9 +34,6 @@ import static android.support.v4.view.ViewCompat.requireViewById;
 import static java.lang.String.format;
 
 public class ImagePagerFragment extends Fragment implements GoToPageDialogFragment.Parent {
-
-    private final int FRAGMENT_BROWSE_MODE = 1;
-    private final int FRAGMENT_SETTINGS = 2;
 
     private View controlsOverlay;
     private PrefetchLinearLayoutManager llm;
@@ -68,7 +66,6 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
                 .observe(this, this::onImagesChanged);
 
         setStatusBarButtonsVisibility(requireActivity(), false);
-        setActionBarVisibility(requireActivity(), false);
 
         return view;
     }
@@ -76,6 +73,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     @Override
     public void onResume() {
         super.onResume();
+        int FRAGMENT_BROWSE_MODE = 1;
         if (PrefsMockup.Constant.PREF_VIEWER_BROWSE_NONE == PrefsMockup.getViewerBrowseMode())
             BrowseModeDialogFragment.invoke(requireActivity().getSupportFragmentManager(), this, FRAGMENT_BROWSE_MODE);
     }
@@ -140,15 +138,8 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     }
 
     private void onSettingsClick() {
-        ViewerPreferencesFragment fragment = new ViewerPreferencesFragment();
-        fragment.setTargetFragment(this, FRAGMENT_SETTINGS);
-
-        requireActivity().getSupportFragmentManager().beginTransaction()
-                .replace(android.R.id.content, fragment)
-                .addToBackStack(null)
-                .commit();
-        setActionBarVisibility(requireActivity(), true);
-        setStatusBarButtonsVisibility(requireActivity(), true);
+        Intent viewerSettings = new Intent(requireActivity(), ImageViewerPrefsActivity.class);
+        startActivityForResult(viewerSettings, 1);
     }
 
     private void onImagesChanged(List<String> images) {
@@ -178,14 +169,14 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (FRAGMENT_BROWSE_MODE == requestCode) {
-            llm.setReverseLayout(PrefsMockup.Constant.PREF_VIEWER_DIRECTION_RTL == PrefsMockup.getViewerDirection());
-            llm.setOrientation(getOrientation());
-            pageSnapWidget.setPageSnapEnabled(PrefsMockup.Constant.PREF_VIEWER_ORIENTATION_VERTICAL != PrefsMockup.getViewerOrientation());
-        } else if (FRAGMENT_SETTINGS == requestCode) {
-            setActionBarVisibility(requireActivity(), false);
-            setStatusBarButtonsVisibility(requireActivity(), false);
-        }
+        // In any case, view has to update according to selected prefs
+        llm.setReverseLayout(PrefsMockup.Constant.PREF_VIEWER_DIRECTION_RTL == PrefsMockup.getViewerDirection());
+        llm.setOrientation(getOrientation());
+        pageSnapWidget.setPageSnapEnabled(PrefsMockup.Constant.PREF_VIEWER_ORIENTATION_VERTICAL != PrefsMockup.getViewerOrientation());
+        if (PrefsMockup.isViewerKeepScreenOn())
+            requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        else
+            requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private int getOrientation() {
@@ -260,13 +251,6 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
                         | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
             }
             decorView.setSystemUiVisibility(uiOptions);
-        }
-    }
-
-    private void setActionBarVisibility(Activity activity, boolean visible) {
-        ActionBar actionBar = ((AppCompatActivity)activity).getSupportActionBar();
-        if (actionBar != null) {
-            if (visible) actionBar.show(); else actionBar.hide();
         }
     }
 }
