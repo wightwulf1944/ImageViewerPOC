@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="pref_viewer_image_display_entries">
+        <item>Fit (image is entirely displayed on screen)</item>
+        <item>Fill (image takes up all screen)</item>
+    </string-array>
+    <string-array name="pref_viewer_image_display_values">
+        <item>0</item>
+        <item>1</item>
+    </string-array>
+
+    <string-array name="pref_viewer_browse_mode_entries">
+        <item>Left to right</item>
+        <item>Right to left</item>
+        <item>Top to bottom</item>
+    </string-array>
+    <string-array name="pref_viewer_browse_mode_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+    </string-array>
+</resources>

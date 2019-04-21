@@ -10,6 +10,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.util.BundleManager;
 import timber.log.Timber;
@@ -18,11 +19,13 @@ public class MainActivity extends AppCompatActivity {
 
     // ASSETS ARE TO BE PUT INTO THE DOWNLOADS FOLDER
     // SubsamplingScaleImageView does _not_ support animated GIFs
-    private final List<String> images = Arrays.asList("01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg" );
+    private final List<String> images = Arrays.asList("01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg", "01.jpg", "02.png", "03.jpg");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        PrefsMockup.init(this.getApplicationContext());
 
         Timber.plant(new Timber.DebugTree());
 

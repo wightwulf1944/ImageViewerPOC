@@ -24,14 +24,14 @@ public class ImageViewerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        if (PrefsMockup.isViewerKeepScreenOn()) getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Intent intent = getIntent();
         int openPageIndex = -1;
         if (intent != null) {
             BundleManager manager = new BundleManager(intent.getExtras());
             List<String> uris = manager.getUrisStr();
-            if (PrefsMockup.resume_where_last_finished) openPageIndex = manager.getOpenPageIndex();
+            if (PrefsMockup.isViewerResumeLastLeft()) openPageIndex = manager.getOpenPageIndex();
 
             if (null == uris) {
                 throw new RuntimeException("Initialization failed");

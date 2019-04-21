@@ -63,7 +63,7 @@ public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder>
         }
 
         private int getScaleType() {
-            if (PrefsMockup.resizeMode == PrefsMockup.RESIZE_MODE_FILL) {
+            if (PrefsMockup.Constant.PREF_VIEWER_DISPLAY_FILL == PrefsMockup.getViewerResizeMode()) {
                 return SubsamplingScaleImageView.SCALE_TYPE_START;
             } else {
                 return SubsamplingScaleImageView.SCALE_TYPE_CENTER_INSIDE;

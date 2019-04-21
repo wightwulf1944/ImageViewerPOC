@@ -39,18 +39,17 @@ public class BrowseModeDialogFragment extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         View ltrButton = requireViewById(view, R.id.chooseHorizontalLtr);
-        ltrButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_HORIZONTAL));
+        ltrButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.Constant.PREF_VIEWER_BROWSE_LTR));
 
         View rtlButton = requireViewById(view, R.id.chooseHorizontalRtl);
-        rtlButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_RTL, PrefsMockup.ORIENTATION_HORIZONTAL));
+        rtlButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.Constant.PREF_VIEWER_BROWSE_RTL));
 
         View verticalButton = requireViewById(view, R.id.chooseVertical);
-        verticalButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.DIRECTION_LTR, PrefsMockup.ORIENTATION_VERTICAL));
+        verticalButton.setOnClickListener(v -> chooseBrowseMode(PrefsMockup.Constant.PREF_VIEWER_BROWSE_TTB));
     }
 
-    private void chooseBrowseMode(int readingDirection, int orientation) {
-        PrefsMockup.readingDirection = readingDirection;
-        PrefsMockup.orientation = orientation;
+    private void chooseBrowseMode(int browseMode) {
+        PrefsMockup.setViewerBrowseMode(browseMode);
 
         Fragment targetFragment = getTargetFragment();
         if (targetFragment != null)

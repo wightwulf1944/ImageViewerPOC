@@ -33,8 +33,6 @@ import static java.lang.String.format;
 
 public class ImagePagerFragment extends Fragment implements GoToPageDialogFragment.Parent {
 
-    private final int REQUEST_CODE = 1;
-
     private View controlsOverlay;
     private PrefetchLinearLayoutManager llm;
     private ImageRecyclerAdapter adapter;
@@ -73,7 +71,8 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     @Override
     public void onResume() {
         super.onResume();
-        if (PrefsMockup.DIRECTION_NONE == PrefsMockup.readingDirection)
+        int REQUEST_CODE = 1;
+        if (PrefsMockup.Constant.PREF_VIEWER_BROWSE_NONE == PrefsMockup.getViewerBrowseMode())
             BrowseModeDialogFragment.invoke(requireActivity().getSupportFragmentManager(), this, REQUEST_CODE);
     }
 
@@ -137,7 +136,9 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     }
 
     private void onSettingsClick() {
-        Toast.makeText(getContext(), "Settings not implemented yet", Toast.LENGTH_SHORT).show();
+        requireActivity().getSupportFragmentManager().beginTransaction()
+                .replace(android.R.id.content, new ViewerPreferencesFragment())
+                .commit();
     }
 
     private void onImagesChanged(List<String> images) {
@@ -166,14 +167,14 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        llm.setReverseLayout(PrefsMockup.DIRECTION_RTL == PrefsMockup.readingDirection);
+        llm.setReverseLayout(PrefsMockup.Constant.PREF_VIEWER_DIRECTION_RTL == PrefsMockup.getViewerDirection());
         llm.setOrientation(getOrientation());
 
-        pageSnapWidget.setPageSnapEnabled(PrefsMockup.ORIENTATION_VERTICAL != PrefsMockup.orientation);
+        pageSnapWidget.setPageSnapEnabled(PrefsMockup.Constant.PREF_VIEWER_ORIENTATION_VERTICAL != PrefsMockup.getViewerOrientation());
     }
 
     private int getOrientation() {
-        if (PrefsMockup.orientation == PrefsMockup.ORIENTATION_HORIZONTAL) {
+        if (PrefsMockup.Constant.PREF_VIEWER_ORIENTATION_HORIZONTAL == PrefsMockup.getViewerOrientation()) {
             return LinearLayoutManager.HORIZONTAL;
         } else {
             return LinearLayoutManager.VERTICAL;
@@ -206,14 +207,14 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     }
 
     private void onLeftTap() {
-        if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
+        if (PrefsMockup.Constant.PREF_VIEWER_DIRECTION_LTR == PrefsMockup.getViewerDirection())
             previousPage();
         else
             nextPage();
     }
 
     private void onRightTap() {
-        if (PrefsMockup.DIRECTION_LTR == PrefsMockup.readingDirection)
+        if (PrefsMockup.Constant.PREF_VIEWER_DIRECTION_LTR == PrefsMockup.getViewerDirection())
             nextPage();
         else
             previousPage();
