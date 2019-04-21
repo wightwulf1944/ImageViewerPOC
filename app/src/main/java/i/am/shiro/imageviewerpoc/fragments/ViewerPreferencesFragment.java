@@ -1,6 +1,9 @@
 package i.am.shiro.imageviewerpoc.fragments;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v7.preference.PreferenceFragmentCompat;
 import android.widget.Toast;
 
@@ -8,6 +11,14 @@ import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
 
 public class ViewerPreferencesFragment extends PreferenceFragmentCompat {
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Fragment targetFragment = getTargetFragment();
+        if (targetFragment != null)
+            getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, new Intent());
+    }
 
     @Override
     public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
