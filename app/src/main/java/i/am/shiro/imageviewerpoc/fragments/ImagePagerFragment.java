@@ -23,6 +23,7 @@ import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.activities.ImageViewerPrefsActivity;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
+import i.am.shiro.imageviewerpoc.util.Helper;
 import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
 import i.am.shiro.imageviewerpoc.widget.OnZoneTapListener;
 import i.am.shiro.imageviewerpoc.widget.PageSnapWidget;
@@ -64,17 +65,14 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
                 .getImages()
                 .observe(this, this::onImagesChanged);
 
-        setStatusBarButtonsVisibility(requireActivity(), false);
-
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        int FRAGMENT_BROWSE_MODE = 1;
         if (PrefsMockup.Constant.PREF_VIEWER_BROWSE_NONE == PrefsMockup.getViewerBrowseMode())
-            BrowseModeDialogFragment.invoke(requireActivity().getSupportFragmentManager(), this, FRAGMENT_BROWSE_MODE);
+            BrowseModeDialogFragment.invoke(requireActivity().getSupportFragmentManager(), this, 1);
     }
 
     private void initPager(View rootView) {
@@ -230,27 +228,10 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         // TODO AlphaAnimation to make it appear progressively
         if (View.VISIBLE == controlsOverlay.getVisibility()) {
             controlsOverlay.setVisibility(View.INVISIBLE);
-            setStatusBarButtonsVisibility(requireActivity(), false);
+            Helper.setStatusBarButtonsVisibility(requireActivity(), false);
         } else {
             controlsOverlay.setVisibility(View.VISIBLE);
-            setStatusBarButtonsVisibility(requireActivity(), true);
-        }
-    }
-
-    private void setStatusBarButtonsVisibility(Activity activity, boolean visible) {
-        // SYSTEM_UI_FLAG_IMMERSIVE is only available since Kitkat. Hiding the system UI
-        // without this flag is pointless, as any screentap would show the system UI again...
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-            View decorView = activity.getWindow().getDecorView();
-            int uiOptions;
-            if (visible) {
-                uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
-            } else {
-                uiOptions = View.SYSTEM_UI_FLAG_IMMERSIVE
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN
-                        | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION;
-            }
-            decorView.setSystemUiVisibility(uiOptions);
+            Helper.setStatusBarButtonsVisibility(requireActivity(), true);
         }
     }
 }
