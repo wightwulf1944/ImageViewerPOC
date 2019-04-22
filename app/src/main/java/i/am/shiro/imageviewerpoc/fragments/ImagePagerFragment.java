@@ -37,6 +37,8 @@ import static java.lang.String.format;
 public class ImagePagerFragment extends Fragment implements GoToPageDialogFragment.Parent,
         BrowseModeDialogFragment.Parent {
 
+    private final static String KEY_HUD_VISIBLE = "hud_visible";
+
     private View controlsOverlay;
     private PrefetchLinearLayoutManager llm;
     private ImageRecyclerAdapter adapter;
@@ -75,10 +77,25 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(KEY_HUD_VISIBLE, controlsOverlay.getVisibility() == View.VISIBLE);
+    }
+
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        boolean hudVisible = false; // Default state at startup
+        if (savedInstanceState != null) {
+            hudVisible = savedInstanceState.getBoolean(KEY_HUD_VISIBLE, false);
+        }
+        controlsOverlay.setVisibility(hudVisible ? View.VISIBLE : View.INVISIBLE);
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
-        controlsOverlay.setVisibility(View.VISIBLE);
-        setSystemBarsVisible(true);
+        setSystemBarsVisible(controlsOverlay.getVisibility() == View.VISIBLE); // System bars are visible only if HUD is visible
         if (PrefsMockup.Constant.PREF_VIEWER_BROWSE_NONE == PrefsMockup.getViewerBrowseMode())
             BrowseModeDialogFragment.invoke(this);
     }
