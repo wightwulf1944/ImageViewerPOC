@@ -14,7 +14,6 @@ import java.util.List;
 import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.fragments.ImagePagerFragment;
 import i.am.shiro.imageviewerpoc.util.BundleManager;
-import i.am.shiro.imageviewerpoc.util.Helper;
 import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
 
 public class ImageViewerActivity extends AppCompatActivity {
@@ -69,13 +68,6 @@ public class ImageViewerActivity extends AppCompatActivity {
                     .add(android.R.id.content, fragment)
                     .commit();
         }
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        // Hide status bar at activity restart
-        Helper.setStatusBarButtonsVisibility(this, false);
     }
 
     @Override
