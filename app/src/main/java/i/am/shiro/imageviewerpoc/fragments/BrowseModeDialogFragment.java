@@ -1,13 +1,10 @@
 package i.am.shiro.imageviewerpoc.fragments;
 
-import android.app.Activity;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +16,11 @@ import static android.support.v4.view.ViewCompat.requireViewById;
 
 public class BrowseModeDialogFragment extends DialogFragment {
 
-    public static void invoke(FragmentManager fragmentManager, Fragment caller, int requestCode) {
+    public static void invoke(Fragment parent) {
         BrowseModeDialogFragment fragment = new BrowseModeDialogFragment();
-
         fragment.setStyle(DialogFragment.STYLE_NO_FRAME, R.style.ViewerBrowseModeDialog);
         fragment.setCancelable(false);
-        fragment.setTargetFragment(caller, requestCode);
-        fragment.show(fragmentManager, null);
+        fragment.show(parent.getChildFragmentManager(), null);
     }
 
     @Nullable
@@ -50,11 +45,15 @@ public class BrowseModeDialogFragment extends DialogFragment {
 
     private void chooseBrowseMode(int browseMode) {
         PrefsMockup.setViewerBrowseMode(browseMode);
-
-        Fragment targetFragment = getTargetFragment();
-        if (targetFragment != null)
-            getTargetFragment().onActivityResult(getTargetRequestCode(), Activity.RESULT_OK, new Intent());
-
+        getParent().onBrowseModeChange();
         dismiss();
+    }
+
+    private Parent getParent() {
+        return (Parent) getParentFragment();
+    }
+
+    public interface Parent {
+        void onBrowseModeChange();
     }
 }

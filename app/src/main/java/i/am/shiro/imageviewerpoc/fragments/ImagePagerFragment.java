@@ -33,7 +33,8 @@ import i.am.shiro.imageviewerpoc.widget.ScrollPositionListener;
 import static android.support.v4.view.ViewCompat.requireViewById;
 import static java.lang.String.format;
 
-public class ImagePagerFragment extends Fragment implements GoToPageDialogFragment.Parent {
+public class ImagePagerFragment extends Fragment implements GoToPageDialogFragment.Parent,
+        BrowseModeDialogFragment.Parent {
 
     private View controlsOverlay;
     private PrefetchLinearLayoutManager llm;
@@ -74,7 +75,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         controlsOverlay.setVisibility(View.VISIBLE);
         setSystemBarsVisible(true);
         if (PrefsMockup.Constant.PREF_VIEWER_BROWSE_NONE == PrefsMockup.getViewerBrowseMode())
-            BrowseModeDialogFragment.invoke(requireActivity().getSupportFragmentManager(), this, 1);
+            BrowseModeDialogFragment.invoke(this);
     }
 
     private void initPager(View rootView) {
@@ -166,9 +167,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
+    public void onBrowseModeChange() {
         // In any case, view has to update according to selected prefs
         llm.setReverseLayout(PrefsMockup.Constant.PREF_VIEWER_DIRECTION_RTL == PrefsMockup.getViewerDirection());
         llm.setOrientation(getOrientation());
