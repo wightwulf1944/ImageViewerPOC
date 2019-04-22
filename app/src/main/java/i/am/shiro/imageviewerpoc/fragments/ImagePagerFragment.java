@@ -29,6 +29,7 @@ import i.am.shiro.imageviewerpoc.widget.OnZoneTapListener;
 import i.am.shiro.imageviewerpoc.widget.PageSnapWidget;
 import i.am.shiro.imageviewerpoc.widget.PrefetchLinearLayoutManager;
 import i.am.shiro.imageviewerpoc.widget.ScrollPositionListener;
+import i.am.shiro.imageviewerpoc.widget.VolumeKeyListener;
 
 import static android.support.v4.view.ViewCompat.requireViewById;
 import static java.lang.String.format;
@@ -85,11 +86,16 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     private void initPager(View rootView) {
         adapter = new ImageRecyclerAdapter();
 
+        VolumeKeyListener volumeKeyListener = new VolumeKeyListener()
+                .setOnVolumeDownKeyListener(this::previousPage)
+                .setOnVolumeUpKeyListener(this::nextPage);
+
         recyclerView = requireViewById(rootView, R.id.image_viewer_recycler);
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(new ScrollPositionListener(this::onCurrentPositionChange));
-        
+        recyclerView.setOnKeyListener(volumeKeyListener);
+
         llm = new PrefetchLinearLayoutManager(getContext());
         llm.setItemPrefetchEnabled(true);
         llm.setPreloadItemCount(2);

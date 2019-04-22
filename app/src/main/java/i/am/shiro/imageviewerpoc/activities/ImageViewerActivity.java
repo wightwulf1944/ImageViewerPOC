@@ -18,8 +18,6 @@ import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
 
 public class ImageViewerActivity extends AppCompatActivity {
 
-    ImagePagerFragment fragment;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,27 +59,10 @@ public class ImageViewerActivity extends AppCompatActivity {
         }
 
         if (null == savedInstanceState) {
-            fragment = new ImagePagerFragment();
             getSupportFragmentManager()
                     .beginTransaction()
-                    .add(android.R.id.content, fragment)
+                    .add(android.R.id.content, new ImagePagerFragment())
                     .commit();
         }
-    }
-
-    // TODO this will stop working if the process is killed and recreated
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        if (fragment != null) {
-            if (keyCode == KeyEvent.KEYCODE_VOLUME_DOWN) {
-                fragment.previousPage();
-                return true;
-            } else if (keyCode == KeyEvent.KEYCODE_VOLUME_UP) {
-                fragment.nextPage();
-                return true;
-            }
-            return super.onKeyDown(keyCode, event);
-        }
-        return super.onKeyDown(keyCode, event);
     }
 }
