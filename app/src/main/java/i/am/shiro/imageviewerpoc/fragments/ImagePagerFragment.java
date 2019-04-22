@@ -44,7 +44,6 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     private RecyclerView recyclerView;
     private PageSnapWidget pageSnapWidget;
 
-    private int openPageIndex;
     private int currentPosition;
     private int maxPosition;
 
@@ -52,21 +51,26 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_viewer, container, false);
 
-        openPageIndex = -1;
-        Bundle bundle = getArguments();
-        if (bundle != null) {
-            openPageIndex = getArguments().getInt("openPageIndex", -1);
-        }
-
         initPager(view);
         initControlsOverlay(view);
 
-        ViewModelProviders.of(requireActivity())
-                .get(ImageViewerViewModel.class)
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ImageViewerViewModel viewModel = ViewModelProviders.of(requireActivity())
+                .get(ImageViewerViewModel.class);
+
+        viewModel
                 .getImages()
                 .observe(this, this::onImagesChanged);
 
-        return view;
+        if (savedInstanceState == null) {
+            recyclerView.scrollToPosition(viewModel.getInitialPosition());
+        }
     }
 
     @Override
@@ -85,7 +89,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         recyclerView.setHasFixedSize(true);
         recyclerView.setAdapter(adapter);
         recyclerView.addOnScrollListener(new ScrollPositionListener(this::onCurrentPositionChange));
-
+        
         llm = new PrefetchLinearLayoutManager(getContext());
         llm.setItemPrefetchEnabled(true);
         llm.setPreloadItemCount(2);
@@ -146,12 +150,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         maxPosition = images.size() - 1;
         adapter.setImageUris(images);
         seekBar.setMax(maxPosition);
-        if (openPageIndex > -1) { // Go to last remembered position, if set
-            goToPage(openPageIndex + 1);
-            openPageIndex = -1; // It only has to happen once
-        } else {
-            updatePageDisplay();
-        }
+        updatePageDisplay();
     }
 
     // Scroll listener

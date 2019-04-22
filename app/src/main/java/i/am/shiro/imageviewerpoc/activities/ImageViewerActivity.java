@@ -28,19 +28,22 @@ public class ImageViewerActivity extends AppCompatActivity {
             getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
         Intent intent = getIntent();
-        int openPageIndex = -1;
         if (intent != null) {
             BundleManager manager = new BundleManager(intent.getExtras());
             List<String> uris = manager.getUrisStr();
-            if (PrefsMockup.isViewerResumeLastLeft()) openPageIndex = manager.getOpenPageIndex();
 
             if (null == uris) {
                 throw new RuntimeException("Initialization failed");
             }
 
-            ViewModelProviders.of(this)
-                    .get(ImageViewerViewModel.class)
-                    .setImages(uris);
+            ImageViewerViewModel viewModel = ViewModelProviders.of(this)
+                    .get(ImageViewerViewModel.class);
+
+            viewModel.setImages(uris);
+
+            if (PrefsMockup.isViewerResumeLastLeft()) {
+                viewModel.setInitialPosition(manager.getOpenPageIndex());
+            }
         }
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -58,11 +61,7 @@ public class ImageViewerActivity extends AppCompatActivity {
         }
 
         if (null == savedInstanceState) {
-            Bundle bundle = new Bundle();
-            if (openPageIndex > -1) bundle.putInt("openPageIndex", openPageIndex);
-
             fragment = new ImagePagerFragment();
-            fragment.setArguments(bundle);
             getSupportFragmentManager()
                     .beginTransaction()
                     .add(android.R.id.content, fragment)
@@ -70,6 +69,7 @@ public class ImageViewerActivity extends AppCompatActivity {
         }
     }
 
+    // TODO this will stop working if the process is killed and recreated
     @Override
     public boolean onKeyDown(int keyCode, KeyEvent event) {
         if (fragment != null) {

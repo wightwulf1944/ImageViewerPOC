@@ -13,6 +13,8 @@ public class ImageViewerViewModel extends ViewModel {
 
     private final MutableLiveData<List<String>> images = new MutableLiveData<>();
 
+    private int initialPosition;
+
     public ImageViewerViewModel() {
         images.setValue(Collections.emptyList());
     }
@@ -24,5 +26,13 @@ public class ImageViewerViewModel extends ViewModel {
 
     public void setImages(List<String> imgs) {
         images.setValue(imgs);
+    }
+
+    public int getInitialPosition() {
+        return initialPosition;
+    }
+
+    public void setInitialPosition(int initialPosition) {
+        this.initialPosition = initialPosition;
     }
 }
