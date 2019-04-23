@@ -204,6 +204,9 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
             case PrefsMockup.Key.PREF_VIEWER_KEEP_SCREEN_ON:
                 onUpdatePrefsScreenOn();
                 break;
+            case PrefsMockup.Key.PREF_VIEWER_IMAGE_DISPLAY:
+                onUpdateImageDisplay();
+                break;
         }
     }
 
@@ -212,6 +215,10 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
             requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         else
             requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    private void onUpdateImageDisplay() {
+        adapter.notifyDataSetChanged(); // NB : will re-run onBindViewHolder for all displayed pictures
     }
 
     @Override

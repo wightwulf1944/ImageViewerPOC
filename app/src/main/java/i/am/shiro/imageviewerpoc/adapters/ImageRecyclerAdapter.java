@@ -15,7 +15,6 @@ import java.util.List;
 import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter.ViewHolder;
-import timber.log.Timber;
 
 public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder> {
 
@@ -48,7 +47,7 @@ public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder>
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, int pos) {
-        viewHolder.imgView.setImage(ImageSource.uri(imageUris.get(pos)));
+        viewHolder.setImageUri(imageUris.get(pos));
     }
 
     final class ViewHolder extends RecyclerView.ViewHolder {
@@ -58,8 +57,13 @@ public final class ImageRecyclerAdapter extends RecyclerView.Adapter<ViewHolder>
         private ViewHolder(@NonNull View itemView) {
             super(itemView);
             imgView = (SubsamplingScaleImageView) itemView;
-            imgView.setMinimumScaleType(getScaleType());
             imgView.setOnTouchListener(itemTouchListener);
+        }
+
+        void setImageUri(String uri) {
+            imgView.recycle();
+            imgView.setMinimumScaleType(getScaleType());
+            imgView.setImage(ImageSource.uri(uri));
         }
 
         private int getScaleType() {
