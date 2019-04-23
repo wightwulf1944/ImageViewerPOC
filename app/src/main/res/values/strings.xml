@@ -5,7 +5,12 @@
     <string name="no">No</string>
 
     <string name="viewer_choose_direction">Choose your reading direction</string>
+
     <string name="viewer_direction_ltr">Left to right</string>
     <string name="viewer_direction_rtl">Right to left</string>
-    <string name="viewer_direction_vertical">Top to bottom</string>
+    <string name="viewer_direction_ttb">Top to bottom</string>
+
+    <string name="viewer_prefs_title">Viewer preferences</string>
+    <string name="viewer_prefs_display_fit">Fit (image is entirely displayed on screen)</string>
+    <string name="viewer_prefs_display_fill">Fill (image takes up all screen)</string>
 </resources>

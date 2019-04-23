@@ -165,13 +165,18 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         });
     }
 
+    @Override
+    public void onDestroy() {
+        PrefsMockup.unregisterPrefsChangedListener(listener);
+        super.onDestroy();
+    }
+
     private void onBackClick() {
         requireActivity().onBackPressed();
     }
 
     private void onSettingsClick() {
-        Intent viewerSettings = new Intent(requireActivity(), ImageViewerPrefsActivity.class);
-        startActivityForResult(viewerSettings, 1);
+        ViewerPrefsDialogFragment.invoke(this);
     }
 
     private void onImagesChanged(List<String> images) {
