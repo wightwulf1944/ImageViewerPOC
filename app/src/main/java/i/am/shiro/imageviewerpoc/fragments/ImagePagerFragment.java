@@ -2,6 +2,7 @@ package i.am.shiro.imageviewerpoc.fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -53,6 +54,8 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_viewer, container, false);
+
+        PrefsMockup.registerPrefsChangedListener(this::onSharedPreferenceChanged);
 
         initPager(view);
         initControlsOverlay(view);
@@ -188,6 +191,25 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         pageNumber.setText(pageDisplayText);
     }
 
+    public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+        switch(key) {
+            case PrefsMockup.Key.PREF_VIEWER_BROWSE_MODE :
+                onBrowseModeChange();
+                break;
+            case PrefsMockup.Key.PREF_VIEWER_KEEP_SCREEN_ON :
+                onUpdatePrefsScreenOn();
+                break;
+        }
+    }
+
+    private void onUpdatePrefsScreenOn()
+    {
+        if (PrefsMockup.isViewerKeepScreenOn())
+            requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        else
+            requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
     @Override
     public void onBrowseModeChange() {
         int currentLayoutDirection;
@@ -203,10 +225,6 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
 
         llm.setOrientation(getOrientation());
         pageSnapWidget.setPageSnapEnabled(PrefsMockup.Constant.PREF_VIEWER_ORIENTATION_VERTICAL != PrefsMockup.getViewerOrientation());
-        if (PrefsMockup.isViewerKeepScreenOn())
-            requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-        else
-            requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private int getOrientation() {

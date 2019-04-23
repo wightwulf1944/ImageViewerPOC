@@ -24,6 +24,10 @@ public class PrefsMockup {
         }
     }
 
+    public static void registerPrefsChangedListener(SharedPreferences.OnSharedPreferenceChangeListener listener)
+    {
+        sharedPreferences.registerOnSharedPreferenceChangeListener(listener);
+    }
 
     public static boolean isViewerResumeLastLeft() {
         return sharedPreferences.getBoolean(Key.PREF_VIEWER_RESUME_LAST_LEFT, Default.PREF_VIEWER_RESUME_LAST_LEFT);
