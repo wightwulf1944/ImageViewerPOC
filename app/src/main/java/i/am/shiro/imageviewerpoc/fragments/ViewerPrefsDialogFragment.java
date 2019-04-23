@@ -43,55 +43,51 @@ public class ViewerPrefsDialogFragment extends DialogFragment {
         theSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> PrefsMockup.setViewerKeepScreenOn(isChecked));
 
         RadioGroup theRadio = requireViewById(view, R.id.viewer_prefs_display_mode_group);
-        switch(PrefsMockup.getViewerResizeMode()) {
-            case (PrefsMockup.Constant.PREF_VIEWER_DISPLAY_FIT) :
+        switch (PrefsMockup.getViewerResizeMode()) {
+            case (PrefsMockup.Constant.PREF_VIEWER_DISPLAY_FIT):
                 theRadio.check(R.id.viewer_prefs_display_mode_action_fit);
                 break;
-            case (PrefsMockup.Constant.PREF_VIEWER_DISPLAY_FILL) :
+            case (PrefsMockup.Constant.PREF_VIEWER_DISPLAY_FILL):
                 theRadio.check(R.id.viewer_prefs_display_mode_action_fill);
                 break;
         }
         theRadio.setOnCheckedChangeListener(this::onChangeDisplayMode);
 
         theRadio = requireViewById(view, R.id.viewer_prefs_browse_mode_group);
-        switch(PrefsMockup.getViewerBrowseMode()) {
-            case (PrefsMockup.Constant.PREF_VIEWER_BROWSE_LTR) :
+        switch (PrefsMockup.getViewerBrowseMode()) {
+            case (PrefsMockup.Constant.PREF_VIEWER_BROWSE_LTR):
                 theRadio.check(R.id.viewer_prefs_browse_mode_action_ltr);
                 break;
-            case (PrefsMockup.Constant.PREF_VIEWER_BROWSE_RTL) :
+            case (PrefsMockup.Constant.PREF_VIEWER_BROWSE_RTL):
                 theRadio.check(R.id.viewer_prefs_browse_mode_action_rtl);
                 break;
-            case (PrefsMockup.Constant.PREF_VIEWER_BROWSE_TTB) :
+            case (PrefsMockup.Constant.PREF_VIEWER_BROWSE_TTB):
                 theRadio.check(R.id.viewer_prefs_browse_mode_action_ttb);
                 break;
         }
         theRadio.setOnCheckedChangeListener(this::onChangeBrowseMode);
     }
 
-    private void onChangeDisplayMode(RadioGroup group, int checkedId)
-    {
-        switch(checkedId)
-        {
-            case (R.id.viewer_prefs_display_mode_action_fit) :
+    private void onChangeDisplayMode(RadioGroup group, int checkedId) {
+        switch (checkedId) {
+            case (R.id.viewer_prefs_display_mode_action_fit):
                 PrefsMockup.setViewerResizeMode(PrefsMockup.Constant.PREF_VIEWER_DISPLAY_FIT);
                 break;
-            case (R.id.viewer_prefs_display_mode_action_fill) :
+            case (R.id.viewer_prefs_display_mode_action_fill):
                 PrefsMockup.setViewerResizeMode(PrefsMockup.Constant.PREF_VIEWER_DISPLAY_FILL);
                 break;
         }
     }
 
-    private void onChangeBrowseMode(RadioGroup group, int checkedId)
-    {
-        switch(checkedId)
-        {
-            case (R.id.viewer_prefs_browse_mode_action_ltr) :
+    private void onChangeBrowseMode(RadioGroup group, int checkedId) {
+        switch (checkedId) {
+            case (R.id.viewer_prefs_browse_mode_action_ltr):
                 PrefsMockup.setViewerBrowseMode(PrefsMockup.Constant.PREF_VIEWER_BROWSE_LTR);
                 break;
-            case (R.id.viewer_prefs_browse_mode_action_rtl) :
+            case (R.id.viewer_prefs_browse_mode_action_rtl):
                 PrefsMockup.setViewerBrowseMode(PrefsMockup.Constant.PREF_VIEWER_BROWSE_RTL);
                 break;
-            case (R.id.viewer_prefs_browse_mode_action_ttb) :
+            case (R.id.viewer_prefs_browse_mode_action_ttb):
                 PrefsMockup.setViewerBrowseMode(PrefsMockup.Constant.PREF_VIEWER_BROWSE_TTB);
                 break;
         }

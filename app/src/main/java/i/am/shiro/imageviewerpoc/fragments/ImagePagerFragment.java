@@ -1,7 +1,6 @@
 package i.am.shiro.imageviewerpoc.fragments;
 
 import android.arch.lifecycle.ViewModelProviders;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
@@ -23,7 +22,6 @@ import java.util.Objects;
 
 import i.am.shiro.imageviewerpoc.PrefsMockup;
 import i.am.shiro.imageviewerpoc.R;
-import i.am.shiro.imageviewerpoc.activities.ImageViewerPrefsActivity;
 import i.am.shiro.imageviewerpoc.adapters.ImageRecyclerAdapter;
 import i.am.shiro.imageviewerpoc.viewmodels.ImageViewerViewModel;
 import i.am.shiro.imageviewerpoc.widget.OnZoneTapListener;
@@ -199,18 +197,17 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     }
 
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-        switch(key) {
-            case PrefsMockup.Key.PREF_VIEWER_BROWSE_MODE :
+        switch (key) {
+            case PrefsMockup.Key.PREF_VIEWER_BROWSE_MODE:
                 onBrowseModeChange();
                 break;
-            case PrefsMockup.Key.PREF_VIEWER_KEEP_SCREEN_ON :
+            case PrefsMockup.Key.PREF_VIEWER_KEEP_SCREEN_ON:
                 onUpdatePrefsScreenOn();
                 break;
         }
     }
 
-    private void onUpdatePrefsScreenOn()
-    {
+    private void onUpdatePrefsScreenOn() {
         if (PrefsMockup.isViewerKeepScreenOn())
             requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         else
@@ -223,7 +220,8 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         // LinearLayoutManager.setReverseLayout behaves _relatively_ to current Layout Direction
         // => need to know that direction before deciding how to set setReverseLayout
         if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            if (View.LAYOUT_DIRECTION_LTR == controlsOverlay.getLayoutDirection()) currentLayoutDirection = PrefsMockup.Constant.PREF_VIEWER_DIRECTION_LTR;
+            if (View.LAYOUT_DIRECTION_LTR == controlsOverlay.getLayoutDirection())
+                currentLayoutDirection = PrefsMockup.Constant.PREF_VIEWER_DIRECTION_LTR;
             else currentLayoutDirection = PrefsMockup.Constant.PREF_VIEWER_DIRECTION_RTL;
         } else {
             currentLayoutDirection = PrefsMockup.Constant.PREF_VIEWER_DIRECTION_LTR; // Only possibility before JELLY_BEAN_MR1

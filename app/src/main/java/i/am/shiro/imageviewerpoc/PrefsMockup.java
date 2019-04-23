@@ -24,13 +24,11 @@ public class PrefsMockup {
         }
     }
 
-    public static void registerPrefsChangedListener(SharedPreferences.OnSharedPreferenceChangeListener listener)
-    {
+    public static void registerPrefsChangedListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
         sharedPreferences.registerOnSharedPreferenceChangeListener(listener);
     }
 
-    public static void unregisterPrefsChangedListener(SharedPreferences.OnSharedPreferenceChangeListener listener)
-    {
+    public static void unregisterPrefsChangedListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
         sharedPreferences.unregisterOnSharedPreferenceChangeListener(listener);
     }
 
