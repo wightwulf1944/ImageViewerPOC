@@ -48,6 +48,8 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     private RecyclerView recyclerView;
     private PageSnapWidget pageSnapWidget;
 
+    private SharedPreferences.OnSharedPreferenceChangeListener listener = this::onSharedPreferenceChanged;
+
     private int currentPosition;
     private int maxPosition;
 
@@ -55,7 +57,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.activity_viewer, container, false);
 
-        PrefsMockup.registerPrefsChangedListener(this::onSharedPreferenceChanged);
+        PrefsMockup.registerPrefsChangedListener(listener);
 
         initPager(view);
         initControlsOverlay(view);
