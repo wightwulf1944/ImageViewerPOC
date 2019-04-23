@@ -190,8 +190,17 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
 
     @Override
     public void onBrowseModeChange() {
-        // In any case, view has to update according to selected prefs
-        llm.setReverseLayout(PrefsMockup.Constant.PREF_VIEWER_DIRECTION_RTL == PrefsMockup.getViewerDirection());
+        int currentLayoutDirection;
+        // LinearLayoutManager.setReverseLayout behaves _relatively_ to current Layout Direction
+        // => need to know that direction before deciding how to set setReverseLayout
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.JELLY_BEAN_MR1) {
+            if (View.LAYOUT_DIRECTION_LTR == controlsOverlay.getLayoutDirection()) currentLayoutDirection = PrefsMockup.Constant.PREF_VIEWER_DIRECTION_LTR;
+            else currentLayoutDirection = PrefsMockup.Constant.PREF_VIEWER_DIRECTION_RTL;
+        } else {
+            currentLayoutDirection = PrefsMockup.Constant.PREF_VIEWER_DIRECTION_LTR; // Only possibility before JELLY_BEAN_MR1
+        }
+        llm.setReverseLayout(PrefsMockup.getViewerDirection() != currentLayoutDirection);
+
         llm.setOrientation(getOrientation());
         pageSnapWidget.setPageSnapEnabled(PrefsMockup.Constant.PREF_VIEWER_ORIENTATION_VERTICAL != PrefsMockup.getViewerOrientation());
         if (PrefsMockup.isViewerKeepScreenOn())
