@@ -59,6 +59,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
 
         initPager(view);
         initControlsOverlay(view);
+        onBrowseModeChange();
 
         return view;
     }
