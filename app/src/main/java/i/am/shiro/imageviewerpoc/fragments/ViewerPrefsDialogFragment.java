@@ -1,5 +1,6 @@
 package i.am.shiro.imageviewerpoc.fragments;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -9,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RadioGroup;
+import android.widget.SeekBar;
 import android.widget.Switch;
 
 import i.am.shiro.imageviewerpoc.PrefsMockup;
@@ -66,6 +68,27 @@ public class ViewerPrefsDialogFragment extends DialogFragment {
                 break;
         }
         theRadio.setOnCheckedChangeListener(this::onChangeBrowseMode);
+
+        SeekBar flingSensitivity = requireViewById(view, R.id.viewer_prefs_fling_sensitivity);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            flingSensitivity.setMin(25);
+        }
+        flingSensitivity.setMax(100);
+        flingSensitivity.setProgress(PrefsMockup.getViewerFlingFactor());
+        flingSensitivity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) PrefsMockup.setViewerFlingFactor(progress);
+            }
+        });
     }
 
     private void onChangeDisplayMode(RadioGroup group, int checkedId) {

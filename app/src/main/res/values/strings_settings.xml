@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="pref_viewer_resume_last_left">Resume reading at the last left page</string>
-    <bool name="pref_viewer_resume_last_left_default">true</bool>
 
     <string name="pref_viewer_keep_screen_on">Keep screen on</string>
-    <bool name="pref_viewer_keep_screen_on_default">true</bool>
 
     <string name="pref_viewer_image_display">Image display mode</string>
-    <string name="pref_viewer_image_display_default">0</string>
-    <string name="pref_viewer_image_display_summary">%s</string>
 
     <string name="pref_viewer_browse_mode">Browse mode</string>
-    <string name="pref_viewer_browse_mode_default">0</string>
-    <string name="pref_viewer_browse_mode_summary">%s</string>
+
+    <string name="pref_viewer_fling_sensitivity">Fling sensitivity</string>
 </resources>

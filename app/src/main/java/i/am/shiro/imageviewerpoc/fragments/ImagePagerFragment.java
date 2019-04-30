@@ -59,7 +59,9 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
 
         initPager(view);
         initControlsOverlay(view);
+
         onBrowseModeChange();
+        onUpdateFlingFactor();
 
         return view;
     }
@@ -124,8 +126,7 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
         recyclerView.setLayoutManager(llm);
 
         pageSnapWidget = new PageSnapWidget(recyclerView)
-                .setPageSnapEnabled(true)
-                .setFlingFactor(50);
+                .setPageSnapEnabled(true);
 
         OnZoneTapListener onZoneTapListener = new OnZoneTapListener(recyclerView)
                 .setOnLeftZoneTapListener(this::onLeftTap)
@@ -208,6 +209,9 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
             case PrefsMockup.Key.PREF_VIEWER_IMAGE_DISPLAY:
                 onUpdateImageDisplay();
                 break;
+            case PrefsMockup.Key.PREF_VIEWER_FLING_FACTOR:
+                onUpdateFlingFactor();
+                break;
         }
     }
 
@@ -216,6 +220,10 @@ public class ImagePagerFragment extends Fragment implements GoToPageDialogFragme
             requireActivity().getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         else
             requireActivity().getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    private void onUpdateFlingFactor() {
+        pageSnapWidget.setFlingFactor(PrefsMockup.getViewerFlingFactor());
     }
 
     private void onUpdateImageDisplay() {

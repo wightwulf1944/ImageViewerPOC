@@ -80,6 +80,16 @@ public class PrefsMockup {
                 .apply();
     }
 
+    public static int getViewerFlingFactor() {
+        return Integer.parseInt(sharedPreferences.getString(Key.PREF_VIEWER_FLING_FACTOR, Integer.toString(Default.PREF_VIEWER_FLING_FACTOR)));
+    }
+
+    public static void setViewerFlingFactor(int flingFactor) {
+        sharedPreferences.edit()
+                .putString(Key.PREF_VIEWER_FLING_FACTOR, Integer.toString(flingFactor))
+                .apply();
+    }
+
 
     public static final class Key {
         static final String PREFS_VERSION_KEY = "prefs_version";
@@ -87,6 +97,7 @@ public class PrefsMockup {
         public static final String PREF_VIEWER_KEEP_SCREEN_ON = "pref_viewer_keep_screen_on";
         public static final String PREF_VIEWER_IMAGE_DISPLAY = "pref_viewer_image_display";
         public static final String PREF_VIEWER_BROWSE_MODE = "pref_viewer_browse_mode";
+        public static final String PREF_VIEWER_FLING_FACTOR = "pref_viewer_fling_factor";
     }
 
     public static final class Default {
@@ -94,6 +105,7 @@ public class PrefsMockup {
         public static final boolean PREF_VIEWER_KEEP_SCREEN_ON = true;
         public static final int PREF_VIEWER_IMAGE_DISPLAY = Constant.PREF_VIEWER_DISPLAY_FIT;
         public static final int PREF_VIEWER_BROWSE_MODE = Constant.PREF_VIEWER_BROWSE_NONE;
+        public static final int PREF_VIEWER_FLING_FACTOR = 50;
     }
 
     public static final class Constant {
